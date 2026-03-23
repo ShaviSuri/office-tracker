@@ -1,102 +1,10 @@
-let holidays = {};
-let manualHolidayCount = 0;
-let userModifiedOffice = false;
+// ONLY showing changed function (rest remains same)
 
-const monthSelect = document.getElementById("monthSelect");
-const yearSelect = document.getElementById("yearSelect");
-const resultDiv = document.getElementById("result");
-const officeInput = document.getElementById("officeDays");
-const leavesInput = document.getElementById("leaves");
-
-// 🔒 enforce numeric only
-function enforceNumber(input) {
-  input.addEventListener("input", () => {
-    input.value = input.value.replace(/[^0-9]/g, "");
-  });
-}
-enforceNumber(officeInput);
-enforceNumber(leavesInput);
-
-// Office manual override
-officeInput.addEventListener("input", () => {
-  userModifiedOffice = true;
-  calculate();
-});
-
-// Leaves change
-leavesInput.addEventListener("input", () => {
-  adjustOfficeDays();
-  calculate();
-});
-
-// Init selectors
-function initSelectors() {
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-  months.forEach((m, i) => {
-    const opt = document.createElement("option");
-    opt.value = String(i + 1).padStart(2, "0");
-    opt.text = m;
-    monthSelect.appendChild(opt);
-  });
-
-  for (let y = 2025; y <= 2030; y++) {
-    const opt = document.createElement("option");
-    opt.value = y;
-    opt.text = y;
-    yearSelect.appendChild(opt);
-  }
-
-  const now = new Date();
-  monthSelect.value = String(now.getMonth() + 1).padStart(2, "0");
-  yearSelect.value = now.getFullYear();
-}
-
-// Load holidays
-fetch("holidays.json")
-  .then(res => res.json())
-  .then(data => {
-    holidays = data;
-    render();
-  });
-
-// Month change
-monthSelect.addEventListener("change", render);
-yearSelect.addEventListener("change", render);
-
-// Optional button
-document.getElementById("calcBtn").addEventListener("click", calculate);
-
-function getKey() {
-  return `${yearSelect.value}-${monthSelect.value}`;
-}
-
-// Main render
-function render() {
-  resetInputs();
-  renderHolidays();
-  autoFillOfficeDays();
-  calculate();
-}
-
-// Reset
-function resetInputs() {
-  leavesInput.value = 0;
-  manualHolidayCount = 0;
-  userModifiedOffice = false;
-}
-
-// 🔥 UPDATED: render holidays with restricted support
 function renderHolidays() {
   const list = document.getElementById("holidayList");
   list.innerHTML = "";
 
   const key = getKey();
-
-  if (holidays[key] && holidays[key].length === 0) {
-    list.innerHTML = "<p>No declared holidays this month</p>";
-    return;
-  }
 
   if (!holidays[key]) {
     const container = document.createElement("div");
@@ -122,131 +30,42 @@ function renderHolidays() {
     return;
   }
 
-  holidays[key].forEach(h => {
-    const div = document.createElement("div");
-    div.className = "holiday-item";
+  const declared = holidays[key].filter(h => h.type === "declared");
+  const restricted = holidays[key].filter(h => h.type === "restricted");
 
-    // 🔥 show type
-    div.innerText = `${h.date} — ${h.name}${h.type === "restricted" ? " (Restricted)" : ""}`;
-
-    // 🔥 subtle styling
-    if (h.type === "restricted") {
-      div.style.color = "#94a3b8";
-    }
-
-    list.appendChild(div);
-  });
-}
-
-// Working days
-function getWorkingDays(year, month) {
-  let count = 0;
-  let date = new Date(year, month - 1, 1);
-
-  while (date.getMonth() === month - 1) {
-    const day = date.getDay();
-    if (day !== 0 && day !== 6) count++;
-    date.setDate(date.getDate() + 1);
-  }
-
-  return count;
-}
-
-// 🔥 UPDATED: count only declared holidays
-function getDeclaredHolidayCount(key) {
-  if (!holidays[key]) return manualHolidayCount;
-
-  return holidays[key].filter(h => h.type === "declared").length;
-}
-
-// Auto-fill office
-function autoFillOfficeDays() {
-  const key = getKey();
-  const year = Number(yearSelect.value);
-  const month = Number(monthSelect.value);
-
-  let working = getWorkingDays(year, month);
-  working -= getDeclaredHolidayCount(key);
-
-  officeInput.value = working > 0 ? working : 0;
-}
-
-// Adjust office
-function adjustOfficeDays() {
-  if (userModifiedOffice) return;
-
-  const key = getKey();
-  const year = Number(yearSelect.value);
-  const month = Number(monthSelect.value);
-
-  let totalWorking = getWorkingDays(year, month);
-  const declared = getDeclaredHolidayCount(key);
-
-  totalWorking -= declared;
-
-  const leaves = Number(leavesInput.value || 0);
-
-  let newOffice = totalWorking - leaves;
-
-  if (newOffice < 0) newOffice = 0;
-
-  officeInput.value = newOffice;
-}
-
-// Calculate
-function calculate() {
-  const key = getKey();
-  const year = Number(yearSelect.value);
-  const month = Number(monthSelect.value);
-
-  let totalWorking = getWorkingDays(year, month);
-  const declared = getDeclaredHolidayCount(key);
-
-  totalWorking -= declared;
-
-  const leaves = Number(leavesInput.value || 0);
-  const officeInputValue = Number(officeInput.value || 0);
-
-  const effectiveWorking = totalWorking - leaves;
-
-  if (effectiveWorking === 0) {
-    resultDiv.innerHTML = `
-      <p>Total Working Days: <span class="highlight">${totalWorking}</span></p>
-      <p>After Leaves: <span class="highlight">0</span></p>
-      <p>Your Presence: <span class="highlight">0%</span></p>
-      <p>Minimum Required: <span class="highlight">0</span></p>
-      <p>Still Needed: <span class="highlight">0</span></p>
-      <p style="color:#94a3b8">No working days left after leaves</p>
-    `;
+  if (declared.length === 0 && restricted.length === 0) {
+    list.innerHTML = "<p>No holidays this month</p>";
     return;
   }
 
-  const effectiveOffice = Math.min(officeInputValue, totalWorking);
+  if (declared.length > 0) {
+    const title = document.createElement("p");
+    title.innerText = "Declared";
+    title.style.fontWeight = "600";
+    list.appendChild(title);
 
-  let rawPercent = (effectiveOffice / effectiveWorking) * 100;
-  const percent = Math.min(rawPercent, 100).toFixed(2);
+    declared.forEach(h => {
+      const div = document.createElement("div");
+      div.className = "holiday-item";
+      div.innerText = `${h.date} — ${h.name}`;
+      list.appendChild(div);
+    });
+  }
 
-  const required = Math.ceil(0.6 * effectiveWorking);
-  const remaining = Math.max(0, required - effectiveOffice);
+  if (restricted.length > 0) {
+    const title = document.createElement("p");
+    title.innerText = "Restricted";
+    title.style.fontWeight = "600";
+    title.style.marginTop = "12px";
+    title.style.color = "#94a3b8";
+    list.appendChild(title);
 
-  let statusClass = "good";
-  if (percent < 60) statusClass = "bad";
-  else if (percent < 70) statusClass = "warn";
-
-  const warning =
-    officeInputValue > totalWorking
-      ? `<p style="color:#facc15">Office days exceed possible working days.</p>`
-      : "";
-
-  resultDiv.innerHTML = `
-    ${warning}
-    <p>Total Working Days: <span class="highlight">${totalWorking}</span></p>
-    <p>After Leaves: <span class="highlight">${effectiveWorking}</span></p>
-    <p>Your Presence: <span class="highlight ${statusClass}">${percent}%</span></p>
-    <p>Minimum Required: <span class="highlight">${required}</span></p>
-    <p>Still Needed: <span class="highlight">${remaining}</span></p>
-  `;
+    restricted.forEach(h => {
+      const div = document.createElement("div");
+      div.className = "holiday-item";
+      div.style.color = "#94a3b8";
+      div.innerText = `${h.date} — ${h.name}`;
+      list.appendChild(div);
+    });
+  }
 }
-
-// Init
-initSelectors();
