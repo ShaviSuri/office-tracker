@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: system-ui;
+  font-family: system-ui, -apple-system;
   background: #0f172a;
   color: #e2e8f0;
 }
@@ -11,70 +11,98 @@ body {
   padding: 20px;
 }
 
+/* Header */
 header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  align-items: center;
+  margin-bottom: 25px;
 }
 
+header h1 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* Month / Year selectors (FIXED) */
 .selectors {
   display: flex;
-  gap: 10px;
+  gap: 6px;
+  align-items: center;
 }
 
-.selectors {
-  display: flex;
-  gap: 8px;
-}
-
-select {
-  padding: 6px 10px;
+.selectors select {
+  height: 32px;
+  padding: 0 8px;
   border-radius: 6px;
   border: 1px solid #334155;
   background: transparent;
   color: #e2e8f0;
   font-size: 13px;
   cursor: pointer;
+  width: auto;
+  min-width: 80px;
 }
 
-select:hover {
+.selectors select:hover {
   border-color: #64748b;
 }
 
-select:focus {
+.selectors select:focus {
   outline: none;
   border-color: #22c55e;
 }
 
+/* Layout */
 main {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
 }
 
+/* Panels */
 .panel {
   background: #1e293b;
   padding: 18px;
   border-radius: 12px;
 }
 
+/* Inputs */
 input {
   width: 100%;
-  padding: 10px;
+  height: 36px;
+  padding: 0 10px;
   margin-bottom: 12px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid #334155;
   background: #0f172a;
   color: white;
+  font-size: 14px;
 }
 
+input:focus {
+  outline: none;
+  border-color: #22c55e;
+}
+
+/* Button */
 button {
   width: 100%;
-  padding: 12px;
+  height: 38px;
   background: #22c55e;
   border: none;
   border-radius: 10px;
+  font-weight: 600;
   cursor: pointer;
+}
+
+button:hover {
+  background: #16a34a;
+}
+
+/* Results */
+.result p {
+  margin: 8px 0;
 }
 
 .highlight {
@@ -82,10 +110,20 @@ button {
   font-size: 18px;
 }
 
-.good { color: #22c55e; }
-.warn { color: #facc15; }
-.bad { color: #ef4444; }
+/* Status colors */
+.good {
+  color: #22c55e;
+}
 
+.warn {
+  color: #facc15;
+}
+
+.bad {
+  color: #ef4444;
+}
+
+/* Holiday list */
 .holiday-item {
   padding: 6px 0;
   border-bottom: 1px solid #334155;
@@ -96,6 +134,7 @@ button {
   position: relative;
   margin-left: 6px;
   cursor: pointer;
+  color: #94a3b8;
 }
 
 .tooltip {
@@ -108,6 +147,8 @@ button {
   border-radius: 6px;
   font-size: 12px;
   width: 220px;
+  line-height: 1.4;
+  z-index: 10;
 }
 
 .info:hover .tooltip {
