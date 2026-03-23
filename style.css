@@ -4,67 +4,54 @@
 
 body {
   margin: 0;
-  font-family: Inter, system-ui;
-  background: #0b1220;
-  color: #e5e7eb;
+  font-family: system-ui;
+  background: #0f172a;
+  color: #e2e8f0;
 }
 
-/* Layout */
 .app {
   max-width: 1100px;
   margin: auto;
-  padding: 24px;
+  padding: 20px;
 }
 
 header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 28px;
+  margin-bottom: 25px;
 }
 
-header h1 {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-/* Select */
 .selectors select {
   height: 32px;
-  padding: 0 10px;
   border-radius: 6px;
-  border: 1px solid #1f2937;
-  background: #0b1220;
+  border: 1px solid #334155;
+  background: #0f172a;
   color: white;
 }
 
-/* Grid */
 main {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
 }
 
-/* Panels */
 .panel {
-  background: #111827;
-  border: 1px solid #1f2937;
+  background: #1e293b;
   padding: 18px;
   border-radius: 12px;
 }
 
-/* Inputs */
 input {
   width: 100%;
   height: 36px;
   margin-bottom: 12px;
   border-radius: 8px;
-  border: 1px solid #1f2937;
-  background: #0b1220;
+  border: 1px solid #334155;
+  background: #0f172a;
   color: white;
   padding: 0 10px;
 }
 
-/* Button */
 button {
   width: 100%;
   height: 36px;
@@ -72,47 +59,43 @@ button {
   background: #22c55e;
   border: none;
   font-weight: 600;
-  cursor: pointer;
 }
 
-/* Holidays */
 .holiday-item {
   display: flex;
   justify-content: space-between;
   padding: 6px 0;
-  border-bottom: 1px solid #1f2937;
+  border-bottom: 1px solid #334155;
 }
 
-/* Icon button */
-.icon-btn {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  border: 1px solid #1f2937;
+/* Sections */
+.section-title {
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 6px;
+}
+
+.muted {
+  color: #94a3b8;
+}
+
+/* Small + icon */
+.icon-add {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid #334155;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
   cursor: pointer;
+  color: #94a3b8;
 }
 
-.icon-btn:hover {
+.icon-add:hover {
   border-color: #22c55e;
   color: #22c55e;
-}
-
-.icon-btn.active {
-  background: #22c55e;
-  color: #022c22;
-  border: none;
-}
-
-/* Result */
-.result p {
-  margin: 8px 0;
-}
-
-.highlight {
-  font-weight: 600;
 }
 
 /* Tooltip */
@@ -125,12 +108,12 @@ button {
 .tooltip {
   display: none;
   position: absolute;
-  top: -5px;
-  left: 20px;
   background: #020617;
   padding: 8px;
   border-radius: 6px;
   font-size: 12px;
+  top: -5px;
+  left: 20px;
 }
 
 .info:hover .tooltip {
