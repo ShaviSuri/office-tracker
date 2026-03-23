@@ -3,27 +3,27 @@ let holidays = {};
 const monthSelect = document.getElementById("monthSelect");
 const yearSelect = document.getElementById("yearSelect");
 const resultDiv = document.getElementById("result");
-
-// Months
-const months = [
-  "01","02","03","04","05","06",
-  "07","08","09","10","11","12"
-];
+const officeInput = document.getElementById("officeDays");
 
 // Populate selectors
 function initSelectors() {
+  const months = [
+    "Jan","Feb","Mar","Apr","May","Jun",
+    "Jul","Aug","Sep","Oct","Nov","Dec"
+  ];
+
   months.forEach((m, i) => {
-    const option = document.createElement("option");
-    option.value = m;
-    option.text = new Date(2026, i).toLocaleString("default", { month: "short" });
-    monthSelect.appendChild(option);
+    const opt = document.createElement("option");
+    opt.value = String(i + 1).padStart(2, "0");
+    opt.text = m;
+    monthSelect.appendChild(opt);
   });
 
   for (let y = 2025; y <= 2030; y++) {
-    const option = document.createElement("option");
-    option.value = y;
-    option.text = y;
-    yearSelect.appendChild(option);
+    const opt = document.createElement("option");
+    opt.value = y;
+    opt.text = y;
+    yearSelect.appendChild(opt);
   }
 
   const now = new Date();
@@ -41,7 +41,6 @@ fetch("holidays.json")
 
 monthSelect.addEventListener("change", render);
 yearSelect.addEventListener("change", render);
-
 document.getElementById("calcBtn").addEventListener("click", calculate);
 
 function getKey() {
@@ -50,6 +49,7 @@ function getKey() {
 
 function render() {
   renderHolidays();
+  autoFillOfficeDays();
   resultDiv.innerHTML = "Click calculate";
 }
 
@@ -85,6 +85,20 @@ function getWorkingDays(year, month) {
   return count;
 }
 
+// 🔥 Auto-fill logic (your requirement)
+function autoFillOfficeDays() {
+  const key = getKey();
+  const year = Number(yearSelect.value);
+  const month = Number(monthSelect.value);
+
+  let working = getWorkingDays(year, month);
+
+  const declared = holidays[key] || [];
+  working -= declared.length;
+
+  officeInput.value = working > 0 ? working : 0;
+}
+
 function calculate() {
   const key = getKey();
   const year = Number(yearSelect.value);
@@ -96,7 +110,7 @@ function calculate() {
   working -= declared.length;
 
   const leaves = Number(document.getElementById("leaves").value || 0);
-  const office = Number(document.getElementById("officeDays").value || 0);
+  const office = Number(officeInput.value || 0);
 
   working -= leaves;
 
@@ -112,8 +126,8 @@ function calculate() {
   resultDiv.innerHTML = `
     <p><strong>Working Days:</strong> ${working}</p>
     <p><strong>Your %:</strong> ${percent}%</p>
-    <p><strong>Required:</strong> ${required}</p>
-    <p><strong>Remaining:</strong> ${remaining}</p>
+    <p><strong>Required for 60%:</strong> ${required}</p>
+    <p><strong>Remaining Needed:</strong> ${remaining}</p>
   `;
 }
 
