@@ -22,12 +22,28 @@ header {
   gap: 10px;
 }
 
+.selectors {
+  display: flex;
+  gap: 8px;
+}
+
 select {
-  padding: 8px;
-  border-radius: 8px;
-  background: #1e293b;
-  color: white;
-  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+select:hover {
+  border-color: #64748b;
+}
+
+select:focus {
+  outline: none;
+  border-color: #22c55e;
 }
 
 main {
