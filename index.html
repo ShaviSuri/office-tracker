@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Office Presence Planner</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -21,19 +22,11 @@
 
     <!-- Holidays -->
     <section class="panel">
-      <h3>
-        Declared Holidays
-        <span class="info">ⓘ
-          <span class="tooltip">
-            Declared → excluded from working days<br>
-            Restricted → optional (can be added as leave)
-          </span>
-        </span>
-      </h3>
+      <h3>Holidays</h3>
       <div id="holidayList"></div>
     </section>
 
-    <!-- Plan -->
+    <!-- Inputs -->
     <section class="panel">
       <h3>Your Plan</h3>
 
@@ -50,6 +43,20 @@
     <section class="panel result">
       <h3>Monthly Summary</h3>
       <div id="result"></div>
+
+      <div class="progress-wrapper">
+        <div class="progress-bar">
+          <div id="progressFill"></div>
+        </div>
+      </div>
+
+      <div id="safeLeaves"></div>
+    </section>
+
+    <!-- Calendar -->
+    <section class="panel calendar">
+      <h3>Calendar View</h3>
+      <div id="calendar"></div>
     </section>
 
   </main>
@@ -57,5 +64,7 @@
 </div>
 
 <script src="app.js"></script>
+<script>lucide.createIcons();</script>
+
 </body>
 </html>
