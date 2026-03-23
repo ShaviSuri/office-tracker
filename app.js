@@ -1,74 +1,83 @@
 let holidays = {};
 
-fetch('holidays.json')
-.then(r=>r.json())
-.then(d=>{
-holidays = d;
-load();
-});
-
 const picker = document.getElementById("monthPicker");
-picker.value = new Date().toISOString().slice(0,7);
+const resultDiv = document.getElementById("result");
 
-picker.addEventListener("change", load);
+picker.value = new Date().toISOString().slice(0, 7);
 
-function load(){
-renderHolidays();
+fetch("holidays.json")
+  .then(res => res.json())
+  .then(data => {
+    holidays = data;
+    render();
+  });
+
+picker.addEventListener("change", render);
+document.getElementById("calcBtn").addEventListener("click", calculate);
+
+function render() {
+  renderHolidays();
+  resultDiv.innerHTML = "";
 }
 
-function renderHolidays(){
-const list = document.getElementById("holidayList");
-list.innerHTML = "";
+function renderHolidays() {
+  const list = document.getElementById("holidayList");
+  list.innerHTML = "";
 
-const month = picker.value;
+  const month = picker.value;
 
-if(!holidays[month]){
-list.innerHTML = "<li>No data</li>";
-return;
+  if (!holidays[month]) {
+    list.innerHTML = "<p style='color:orange'>No holidays configured</p>";
+    return;
+  }
+
+  holidays[month].forEach(h => {
+    const div = document.createElement("div");
+    div.className = "holiday-item";
+    div.innerText = `${h.date} — ${h.name}`;
+    list.appendChild(div);
+  });
 }
 
-holidays[month].forEach(h=>{
-const li = document.createElement("li");
-li.innerText = `${h.date.split('-')[2]} - ${h.name}`;
-list.appendChild(li);
-});
+function getWorkingDays(year, month) {
+  let count = 0;
+  let date = new Date(year, month, 1);
+
+  while (date.getMonth() === month) {
+    const day = date.getDay();
+    if (day !== 0 && day !== 6) count++;
+    date.setDate(date.getDate() + 1);
+  }
+
+  return count;
 }
 
-function getWorkingDays(year, month){
-let count = 0;
-let date = new Date(year, month, 1);
+function calculate() {
+  const [year, month] = picker.value.split("-").map(Number);
 
-while(date.getMonth() === month){
-let d = date.getDay();
-if(d !== 0 && d !== 6){
-count++;
-}
-date.setDate(date.getDate()+1);
-}
-return count;
-}
+  let working = getWorkingDays(year, month - 1);
 
-function calculate(){
-const [year, month] = picker.value.split("-").map(Number);
+  const declared = holidays[picker.value] || [];
+  working -= declared.length;
 
-let working = getWorkingDays(year, month-1);
+  const leaves = Number(document.getElementById("leaves").value || 0);
+  const office = Number(document.getElementById("officeDays").value || 0);
 
-let declared = holidays[picker.value] || [];
-working -= declared.length;
+  working -= leaves;
 
-let leaves = parseInt(document.getElementById("leaves").value) || 0;
-let office = parseInt(document.getElementById("officeDays").value) || 0;
+  if (working <= 0) {
+    resultDiv.innerHTML = "Invalid data";
+    return;
+  }
 
-working -= leaves;
+  const percent = ((office / working) * 100).toFixed(2);
+  const required = Math.ceil(0.6 * working);
+  const remaining = Math.max(0, required - office);
 
-let percent = ((office/working)*100 || 0).toFixed(2);
-let required = Math.ceil(0.6 * working);
-let remaining = Math.max(0, required-office);
-
-document.getElementById("result").innerHTML = `
-<p>Working Days: ${working}</p>
-<p>Your %: ${percent}%</p>
-<p>Required: ${required}</p>
-<p>Remaining: ${remaining}</p>
-`;
+  resultDiv.innerHTML = `
+    <p><strong>Working Days:</strong> ${working}</p>
+    <p><strong>Your %:</strong> ${percent}%</p>
+    <p><strong>Required:</strong> ${required}</p>
+    <p><strong>Remaining:</strong> ${remaining}</p>
+  `;
 }
