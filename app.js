@@ -9,7 +9,7 @@ const resultDiv = document.getElementById("result");
 const officeInput = document.getElementById("officeDays");
 const leavesInput = document.getElementById("leaves");
 
-// 🔒 numeric only
+// numeric only
 function enforceNumber(input) {
   input.addEventListener("input", () => {
     input.value = input.value.replace(/[^0-9]/g, "");
@@ -18,19 +18,17 @@ function enforceNumber(input) {
 enforceNumber(officeInput);
 enforceNumber(leavesInput);
 
-// Office manual override
 officeInput.addEventListener("input", () => {
   userModifiedOffice = true;
   calculate();
 });
 
-// Leaves input (manual leaves)
 leavesInput.addEventListener("input", () => {
   adjustOfficeDays();
   calculate();
 });
 
-// Init selectors
+// init
 function initSelectors() {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -53,7 +51,7 @@ function initSelectors() {
   yearSelect.value = now.getFullYear();
 }
 
-// Load holidays
+// load holidays
 fetch("holidays.json")
   .then(res => res.json())
   .then(data => {
@@ -61,11 +59,9 @@ fetch("holidays.json")
     render();
   });
 
-// Month change
 monthSelect.addEventListener("change", render);
 yearSelect.addEventListener("change", render);
 
-// Helpers
 function getKey() {
   return `${yearSelect.value}-${monthSelect.value}`;
 }
@@ -77,7 +73,6 @@ function resetInputs() {
   selectedRestricted = [];
 }
 
-// Render all
 function render() {
   resetInputs();
   renderHolidays();
@@ -85,7 +80,7 @@ function render() {
   calculate();
 }
 
-// 🔥 Render Holidays (FINAL FIXED)
+// 🔥 CLEAN render holidays
 function renderHolidays() {
   const list = document.getElementById("holidayList");
   list.innerHTML = "";
@@ -129,19 +124,17 @@ function renderHolidays() {
 
       const div = document.createElement("div");
       div.className = "holiday-item";
-      div.style.display = "flex";
-      div.style.justifyContent = "space-between";
 
       const text = document.createElement("span");
       text.innerText = `${h.date} — ${h.name}`;
       text.style.color = "#94a3b8";
 
       const btn = document.createElement("button");
-      btn.style.height = "24px";
-      btn.style.fontSize = "12px";
+      btn.className = "mini-btn";
 
       if (isSelected) {
-        btn.innerText = "Remove";
+        btn.innerText = "Added";
+        btn.classList.add("active");
         btn.onclick = () => {
           selectedRestricted = selectedRestricted.filter(d => d !== h.date);
           updateLeaves();
@@ -149,7 +142,7 @@ function renderHolidays() {
           calculate();
         };
       } else {
-        btn.innerText = "+ Add";
+        btn.innerText = "Add";
         btn.onclick = () => {
           selectedRestricted.push(h.date);
           updateLeaves();
@@ -165,18 +158,16 @@ function renderHolidays() {
   }
 }
 
-// 🔥 Leaves = manual + selected restricted
+// leaves = manual + selected restricted
 function updateLeaves() {
-  const manualLeaves = Number(leavesInput.dataset.manual || 0);
-  leavesInput.value = manualLeaves + selectedRestricted.length;
+  const manual = Number(leavesInput.dataset.manual || 0);
+  leavesInput.value = manual + selectedRestricted.length;
 }
 
-// Track manual leaves separately
 leavesInput.addEventListener("input", () => {
   leavesInput.dataset.manual = leavesInput.value;
 });
 
-// Working days
 function getWorkingDays(year, month) {
   let count = 0;
   let date = new Date(year, month - 1, 1);
@@ -195,7 +186,6 @@ function getDeclaredHolidayCount(key) {
   return holidays[key].filter(h => h.type === "declared").length;
 }
 
-// Auto-fill office
 function autoFillOfficeDays() {
   const key = getKey();
   const year = Number(yearSelect.value);
@@ -207,7 +197,6 @@ function autoFillOfficeDays() {
   officeInput.value = working > 0 ? working : 0;
 }
 
-// Adjust office
 function adjustOfficeDays() {
   if (userModifiedOffice) return;
 
@@ -222,7 +211,6 @@ function adjustOfficeDays() {
   officeInput.value = Math.max(0, totalWorking - leaves);
 }
 
-// Calculate
 function calculate() {
   const key = getKey();
   const year = Number(yearSelect.value);
@@ -262,5 +250,4 @@ function calculate() {
   `;
 }
 
-// Init
 initSelectors();
