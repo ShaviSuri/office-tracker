@@ -15,7 +15,6 @@ body {
   padding: 20px;
 }
 
-/* Header */
 header {
   display: flex;
   justify-content: space-between;
@@ -28,20 +27,18 @@ header h1 {
   font-weight: 600;
 }
 
-/* Selectors */
 .selectors {
   display: flex;
   gap: 6px;
   align-items: center;
 }
 
-/* 🔥 FIXED SELECT (Edge + Chrome + Firefox consistent) */
 .selectors select {
   height: 32px;
   padding: 0 28px 0 8px;
   border-radius: 6px;
   border: 1px solid #334155;
-  background-color: #0f172a; /* FIX white issue */
+  background-color: #0f172a;
   color: #e2e8f0;
   font-size: 13px;
   cursor: pointer;
@@ -56,23 +53,12 @@ header h1 {
   background-position: right 8px center;
 }
 
-.selectors select:hover {
-  border-color: #64748b;
-}
-
-.selectors select:focus {
-  outline: none;
-  border-color: #22c55e;
-}
-
-/* Layout */
 main {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
 }
 
-/* Panels */
 .panel {
   background: #1e293b;
   padding: 18px;
@@ -81,14 +67,12 @@ main {
   flex-direction: column;
 }
 
-/* Labels */
 label {
   font-size: 13px;
   margin-bottom: 4px;
   color: #94a3b8;
 }
 
-/* Inputs */
 input {
   width: 100%;
   height: 36px;
@@ -101,12 +85,6 @@ input {
   font-size: 14px;
 }
 
-input:focus {
-  outline: none;
-  border-color: #22c55e;
-}
-
-/* Button */
 button {
   width: 100%;
   height: 36px;
@@ -121,30 +99,15 @@ button:hover {
   background: #16a34a;
 }
 
-/* Results */
-.result p {
-  margin: 8px 0;
-}
-
 .highlight {
   font-weight: bold;
   font-size: 18px;
 }
 
-/* Status */
-.good {
-  color: #22c55e;
-}
+.good { color: #22c55e; }
+.warn { color: #facc15; }
+.bad { color: #ef4444; }
 
-.warn {
-  color: #facc15;
-}
-
-.bad {
-  color: #ef4444;
-}
-
-/* Holidays */
 .holiday-item {
   padding: 6px 0;
   border-bottom: 1px solid #334155;
@@ -169,7 +132,6 @@ button:hover {
   font-size: 12px;
   width: 220px;
   line-height: 1.4;
-  z-index: 10;
 }
 
 .info:hover .tooltip {
