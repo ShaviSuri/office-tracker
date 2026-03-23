@@ -1,6 +1,6 @@
 let holidays = {};
 let manualHolidayCount = 0;
-let userModifiedOffice = false; 
+let userModifiedOffice = false;
 
 const monthSelect = document.getElementById("monthSelect");
 const yearSelect = document.getElementById("yearSelect");
@@ -17,13 +17,13 @@ function enforceNumber(input) {
 enforceNumber(officeInput);
 enforceNumber(leavesInput);
 
-// 🔥 Office input (manual override)
+// Office manual override
 officeInput.addEventListener("input", () => {
   userModifiedOffice = true;
   calculate();
 });
 
-// 🔥 Leaves input → auto adjust only if NOT overridden
+// Leaves change
 leavesInput.addEventListener("input", () => {
   adjustOfficeDays();
   calculate();
@@ -79,14 +79,14 @@ function render() {
   calculate();
 }
 
-// Reset values
+// Reset
 function resetInputs() {
   leavesInput.value = 0;
   manualHolidayCount = 0;
-  userModifiedOffice = false; // 🔥 reset override on month change
+  userModifiedOffice = false;
 }
 
-// Holiday UI
+// 🔥 UPDATED: render holidays with restricted support
 function renderHolidays() {
   const list = document.getElementById("holidayList");
   list.innerHTML = "";
@@ -125,12 +125,20 @@ function renderHolidays() {
   holidays[key].forEach(h => {
     const div = document.createElement("div");
     div.className = "holiday-item";
-    div.innerText = `${h.date} — ${h.name}`;
+
+    // 🔥 show type
+    div.innerText = `${h.date} — ${h.name}${h.type === "restricted" ? " (Restricted)" : ""}`;
+
+    // 🔥 subtle styling
+    if (h.type === "restricted") {
+      div.style.color = "#94a3b8";
+    }
+
     list.appendChild(div);
   });
 }
 
-// Working days calc
+// Working days
 function getWorkingDays(year, month) {
   let count = 0;
   let date = new Date(year, month - 1, 1);
@@ -144,12 +152,14 @@ function getWorkingDays(year, month) {
   return count;
 }
 
+// 🔥 UPDATED: count only declared holidays
 function getDeclaredHolidayCount(key) {
-  if (holidays[key]) return holidays[key].length;
-  return manualHolidayCount;
+  if (!holidays[key]) return manualHolidayCount;
+
+  return holidays[key].filter(h => h.type === "declared").length;
 }
 
-// Auto-fill office days
+// Auto-fill office
 function autoFillOfficeDays() {
   const key = getKey();
   const year = Number(yearSelect.value);
@@ -161,7 +171,7 @@ function autoFillOfficeDays() {
   officeInput.value = working > 0 ? working : 0;
 }
 
-// 🔥 Adjust office days only if user hasn’t overridden
+// Adjust office
 function adjustOfficeDays() {
   if (userModifiedOffice) return;
 
@@ -183,7 +193,7 @@ function adjustOfficeDays() {
   officeInput.value = newOffice;
 }
 
-// Main calculation
+// Calculate
 function calculate() {
   const key = getKey();
   const year = Number(yearSelect.value);
@@ -199,7 +209,6 @@ function calculate() {
 
   const effectiveWorking = totalWorking - leaves;
 
-  // ✅ Handle full leave case (valid scenario)
   if (effectiveWorking === 0) {
     resultDiv.innerHTML = `
       <p>Total Working Days: <span class="highlight">${totalWorking}</span></p>
