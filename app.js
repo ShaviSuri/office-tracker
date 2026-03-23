@@ -16,9 +16,14 @@ function enforceNumber(input) {
 enforceNumber(officeInput);
 enforceNumber(leavesInput);
 
-// 🔥 REAL-TIME updates
+// ⚡ Real-time updates
 officeInput.addEventListener("input", calculate);
-leavesInput.addEventListener("input", calculate);
+
+// 🔥 UPDATED: leaves triggers auto adjust + calculate
+leavesInput.addEventListener("input", () => {
+  adjustOfficeDays();
+  calculate();
+});
 
 // Init selectors
 function initSelectors() {
@@ -55,19 +60,19 @@ fetch("holidays.json")
 monthSelect.addEventListener("change", render);
 yearSelect.addEventListener("change", render);
 
-// Optional button (still works if you keep it)
+// Optional button
 document.getElementById("calcBtn").addEventListener("click", calculate);
 
 function getKey() {
   return `${yearSelect.value}-${monthSelect.value}`;
 }
 
-// 🔥 Main render
+// Main render
 function render() {
   resetInputs();
   renderHolidays();
   autoFillOfficeDays();
-  calculate(); // auto-run
+  calculate();
 }
 
 // Reset values
@@ -83,13 +88,11 @@ function renderHolidays() {
 
   const key = getKey();
 
-  // Case: empty month
   if (holidays[key] && holidays[key].length === 0) {
     list.innerHTML = "<p>No declared holidays this month</p>";
     return;
   }
 
-  // Case: not configured
   if (!holidays[key]) {
     const container = document.createElement("div");
 
@@ -103,7 +106,6 @@ function renderHolidays() {
 
     enforceNumber(input);
 
-    // 🔥 real-time update
     input.addEventListener("input", (e) => {
       manualHolidayCount = Number(e.target.value || 0);
       calculate();
@@ -115,7 +117,6 @@ function renderHolidays() {
     return;
   }
 
-  // Normal holidays
   holidays[key].forEach(h => {
     const div = document.createElement("div");
     div.className = "holiday-item";
@@ -155,6 +156,27 @@ function autoFillOfficeDays() {
   officeInput.value = working > 0 ? working : 0;
 }
 
+// 🔥 NEW: adjust office days based on leaves
+function adjustOfficeDays() {
+  const key = getKey();
+  const year = Number(yearSelect.value);
+  const month = Number(monthSelect.value);
+
+  let totalWorking = getWorkingDays(year, month);
+  const declared = getDeclaredHolidayCount(key);
+
+  totalWorking -= declared;
+
+  const leaves = Number(leavesInput.value || 0);
+
+  let newOffice = totalWorking - leaves;
+
+  if (newOffice < 0) newOffice = 0;
+
+  officeInput.value = newOffice;
+}
+
+// Main calculation
 function calculate() {
   const key = getKey();
   const year = Number(yearSelect.value);
@@ -175,11 +197,11 @@ function calculate() {
     return;
   }
 
-  // ✅ FIXED logic
   const effectiveOffice = Math.min(officeInputValue, totalWorking);
 
   let rawPercent = (effectiveOffice / effectiveWorking) * 100;
   const percent = Math.min(rawPercent, 100).toFixed(2);
+
   const required = Math.ceil(0.6 * effectiveWorking);
   const remaining = Math.max(0, required - effectiveOffice);
 
@@ -187,7 +209,6 @@ function calculate() {
   if (percent < 60) statusClass = "bad";
   else if (percent < 70) statusClass = "warn";
 
-  // 🔥 Smarter warning (only when truly unrealistic)
   const warning =
     officeInputValue > totalWorking
       ? `<p style="color:#facc15">Office days exceed possible working days.</p>`
