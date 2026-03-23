@@ -99,6 +99,30 @@ button:hover {
   background: #16a34a;
 }
 
+/* 🔥 Mini inline button */
+.mini-btn {
+  height: 22px;
+  padding: 0 8px;
+  font-size: 11px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mini-btn:hover {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.mini-btn.active {
+  background: #22c55e;
+  color: #022c22;
+  border: none;
+}
+
 .highlight {
   font-weight: bold;
   font-size: 18px;
@@ -111,6 +135,9 @@ button:hover {
 .holiday-item {
   padding: 6px 0;
   border-bottom: 1px solid #334155;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Tooltip */
