@@ -22,6 +22,19 @@ h1 {
   font-size: 22px;
 }
 
+.selectors {
+  display: flex;
+  gap: 10px;
+}
+
+select {
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  background: #1e293b;
+  color: white;
+}
+
 main {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
