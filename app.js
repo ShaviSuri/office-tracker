@@ -11,12 +11,13 @@ const leavesInput = document.getElementById("leaves");
 const progressFill = document.getElementById("progressFill");
 const safeLeavesDiv = document.getElementById("safeLeaves");
 
+// Init
 function initSelectors() {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   months.forEach((m,i)=>{
     const opt=document.createElement("option");
-    opt.value=i;
+    opt.value=String(i+1).padStart(2,"0");
     opt.text=m;
     monthSelect.appendChild(opt);
   });
@@ -29,10 +30,11 @@ function initSelectors() {
   }
 
   const now=new Date();
-  monthSelect.value=now.getMonth();
+  monthSelect.value=String(now.getMonth()+1).padStart(2,"0");
   yearSelect.value=now.getFullYear();
 }
 
+// Load
 fetch("holidays.json")
 .then(r=>r.json())
 .then(data=>{
@@ -44,22 +46,119 @@ monthSelect.addEventListener("change", render);
 yearSelect.addEventListener("change", render);
 
 leavesInput.addEventListener("input", ()=>{
+  leavesInput.dataset.manual = leavesInput.value;
+  adjustOfficeDays();
   calculate();
 });
 
 officeInput.addEventListener("input", ()=>{
-  userModifiedOffice=true;
+  userModifiedOffice = true;
   calculate();
 });
 
 function getKey(){
-  const m = String(Number(monthSelect.value)+1).padStart(2,"0");
-  return `${yearSelect.value}-${m}`;
+  return `${yearSelect.value}-${monthSelect.value}`;
 }
 
+// Render
 function render(){
+  selectedRestricted=[];
+  leavesInput.value=0;
+  leavesInput.dataset.manual=0;
+  userModifiedOffice=false;
+  manualHolidayCount=0;
+
+  renderHolidays();
+  autoFillOffice();
   renderCalendar();
   calculate();
+}
+
+// Holidays
+function renderHolidays(){
+  const list=document.getElementById("holidayList");
+  list.innerHTML="";
+
+  const key=getKey();
+
+  if(!holidays[key]){
+    const msg=document.createElement("p");
+    msg.style.color="orange";
+    msg.innerText="No configuration available for this month";
+
+    const input=document.createElement("input");
+    input.type="number";
+    input.placeholder="Enter declared holidays";
+
+    input.addEventListener("input",(e)=>{
+      manualHolidayCount=Number(e.target.value||0);
+      if(!userModifiedOffice) autoFillOffice();
+      calculate();
+    });
+
+    list.appendChild(msg);
+    list.appendChild(input);
+    return;
+  }
+
+  const declared=holidays[key].filter(h=>h.type==="declared");
+  const restricted=holidays[key].filter(h=>h.type==="restricted");
+
+  if(declared.length===0 && restricted.length===0){
+    list.innerHTML="<p>No declared or restricted holidays this month</p>";
+    return;
+  }
+
+  if(declared.length){
+    list.innerHTML += "<div style='font-weight:600'>Declared</div>";
+    declared.forEach(h=>{
+      list.innerHTML += `<div class="holiday-item">${h.date} — ${h.name}</div>`;
+    });
+  }
+
+  if(restricted.length){
+    list.innerHTML += "<div style='font-weight:600;margin-top:10px;color:#94a3b8'>Restricted</div>";
+
+    restricted.forEach(h=>{
+      const isSelected=selectedRestricted.includes(h.date);
+
+      const div=document.createElement("div");
+      div.className="holiday-item";
+
+      const text=document.createElement("span");
+      text.innerText=`${h.date} — ${h.name}`;
+      text.style.color="#94a3b8";
+
+      const btn=document.createElement("div");
+      btn.className="icon-add";
+      btn.innerHTML=isSelected
+        ? '<i data-lucide="check"></i>'
+        : '<i data-lucide="plus"></i>';
+
+      btn.onclick=()=>{
+        if(isSelected){
+          selectedRestricted=selectedRestricted.filter(d=>d!==h.date);
+        } else {
+          selectedRestricted.push(h.date);
+        }
+        updateLeaves();
+        renderHolidays();
+        calculate();
+      };
+
+      div.appendChild(text);
+      div.appendChild(btn);
+      list.appendChild(div);
+    });
+  }
+
+  lucide.createIcons();
+}
+
+// Leaves
+function updateLeaves(){
+  const manual=Number(leavesInput.dataset.manual||0);
+  leavesInput.value=manual+selectedRestricted.length;
 }
 
 // Calendar
@@ -67,13 +166,12 @@ function renderCalendar(){
   const cal=document.getElementById("calendar");
   cal.innerHTML="";
 
-  const year=yearSelect.value;
-  const month=Number(monthSelect.value);
-
+  const year=Number(yearSelect.value);
+  const month=Number(monthSelect.value)-1;
   const key=getKey();
   const list=holidays[key]||[];
 
-  const date=new Date(year,month,1);
+  let date=new Date(year,month,1);
 
   while(date.getMonth()===month){
     const d=date.getDate();
@@ -86,7 +184,8 @@ function renderCalendar(){
     if(day===0||day===6) cell.classList.add("weekend");
 
     list.forEach(h=>{
-      if(new Date(h.date).getDate()===d){
+      const hd=new Date(h.date);
+      if(hd.getDate()===d){
         if(h.type==="declared") cell.classList.add("declared");
         if(h.type==="restricted") cell.classList.add("restricted");
       }
@@ -97,54 +196,86 @@ function renderCalendar(){
   }
 }
 
-// Calculation
+// Working days
 function getWorkingDays(y,m){
-  let d=new Date(y,m,1),c=0;
-  while(d.getMonth()===m){
+  let d=new Date(y,m-1,1),c=0;
+  while(d.getMonth()===m-1){
     if(d.getDay()!=0 && d.getDay()!=6) c++;
     d.setDate(d.getDate()+1);
   }
   return c;
 }
 
+function getDeclared(key){
+  if(!holidays[key]) return manualHolidayCount;
+  return holidays[key].filter(h=>h.type==="declared").length;
+}
+
+function autoFillOffice(){
+  let w=getWorkingDays(yearSelect.value,monthSelect.value);
+  w-=getDeclared(getKey());
+  officeInput.value=w;
+}
+
+function adjustOfficeDays(){
+  if(userModifiedOffice) return;
+
+  let total=getWorkingDays(yearSelect.value,monthSelect.value);
+  total-=getDeclared(getKey());
+
+  const leaves=Number(leavesInput.value||0);
+  officeInput.value=Math.max(0,total-leaves);
+}
+
+// Calculate
 function calculate(){
-  const year=Number(yearSelect.value);
-  const month=Number(monthSelect.value);
-
-  let total=getWorkingDays(year,month);
-
-  const key=getKey();
-  const declared=(holidays[key]||[]).filter(h=>h.type==="declared").length;
-
-  total-=declared;
+  let total=getWorkingDays(yearSelect.value,monthSelect.value);
+  total-=getDeclared(getKey());
 
   const leaves=Number(leavesInput.value||0);
   const office=Number(officeInput.value||0);
 
   const effective=Math.max(0,total-leaves);
 
-  let percent=(office/effective)*100 || 0;
-  percent=Math.min(percent,100);
+  let warning="";
+  if(userModifiedOffice && office>total){
+    warning=`<p class="warn">Office days exceed possible working days</p>`;
+  }
+
+  if(effective===0){
+    resultDiv.innerHTML=`
+      ${warning}
+      <p>Total Working Days: <span class="highlight">${total}</span></p>
+      <p>After Leaves: <span class="highlight">0</span></p>
+      <p>Your Presence: <span class="highlight">0%</span></p>
+    `;
+    return;
+  }
+
+  const effectiveOffice=Math.min(office,total);
+
+  let percent=(effectiveOffice/effective)*100;
+  percent=Math.min(percent,100).toFixed(2);
 
   const required=Math.ceil(0.6*effective);
-
-  const safeLeaves=Math.max(0,total-required);
-
-  // progress
-  progressFill.style.width=Math.min(percent,100)+"%";
-
-  safeLeavesDiv.innerHTML=`Safe Leaves Remaining: <b>${safeLeaves}</b>`;
+  const remaining=Math.max(0,required-effectiveOffice);
 
   let cls="good";
   if(percent<60) cls="bad";
   else if(percent<70) cls="warn";
 
   resultDiv.innerHTML=`
+    ${warning}
     <p>Total Working Days: <span class="highlight">${total}</span></p>
     <p>After Leaves: <span class="highlight">${effective}</span></p>
-    <p>Your Presence: <span class="highlight ${cls}">${percent.toFixed(2)}%</span></p>
+    <p>Your Presence: <span class="highlight ${cls}">${percent}%</span></p>
     <p>Minimum Required: <span class="highlight">${required}</span></p>
+    <p>Still Needed: <span class="highlight">${remaining}</span></p>
   `;
+
+  progressFill.style.width=percent+"%";
+  const safeLeaves=Math.max(0,total-required);
+  safeLeavesDiv.innerHTML=`Safe leaves remaining: <b>${safeLeaves}</b>`;
 }
 
 initSelectors();
