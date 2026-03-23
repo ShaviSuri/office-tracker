@@ -1,65 +1,15 @@
-body {
-  margin: 0;
-  font-family: system-ui;
-  background: #0f172a;
-  color: #e2e8f0;
+/* KEEP YOUR EXISTING CSS ABOVE THIS */
+
+/* === NEW ADDITIONS === */
+
+.progress-wrapper {
+  margin-top: 12px;
 }
 
-.app {
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-main {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 20px;
-}
-
-.panel {
-  background: #1e293b;
-  padding: 16px;
-  border-radius: 10px;
-}
-
-input, select, button {
-  width: 100%;
-  margin-bottom: 10px;
-  height: 34px;
-  border-radius: 6px;
-  border: 1px solid #334155;
-  background: #0f172a;
-  color: white;
-  padding: 5px;
-}
-
-button {
-  background: #22c55e;
-  border: none;
-}
-
-.highlight {
-  font-weight: bold;
-  font-size: 18px;
-}
-
-.good { color: #22c55e; }
-.warn { color: #facc15; }
-.bad { color: #ef4444; }
-
-/* Progress */
 .progress-bar {
   height: 8px;
   background: #334155;
   border-radius: 5px;
-  margin-top: 10px;
 }
 
 #progressFill {
@@ -67,6 +17,13 @@ button {
   width: 0%;
   background: #22c55e;
   border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+#safeLeaves {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #94a3b8;
 }
 
 /* Calendar */
@@ -77,7 +34,7 @@ button {
 #calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+  gap: 6px;
   margin-top: 10px;
 }
 
@@ -88,6 +45,15 @@ button {
   font-size: 12px;
 }
 
-.weekend { background: #1e293b; color: #64748b; }
-.declared { background: #ef4444; }
-.restricted { background: #facc15; color: black; }
+.weekend {
+  color: #64748b;
+}
+
+.declared {
+  background: #ef4444;
+}
+
+.restricted {
+  background: #facc15;
+  color: black;
+}
