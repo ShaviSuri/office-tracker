@@ -95,7 +95,7 @@ function renderHolidays() {
 
     const msg = document.createElement("p");
     msg.style.color = "orange";
-    msg.innerText = "Future month — not configured";
+    msg.innerText = "Month/Year is not configured";
 
     const input = document.createElement("input");
     input.type = "number";
