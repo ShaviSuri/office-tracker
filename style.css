@@ -4,22 +4,22 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system;
-  background: #0f172a;
-  color: #e2e8f0;
+  font-family: Inter, system-ui;
+  background: #0b1220;
+  color: #e5e7eb;
 }
 
+/* Layout */
 .app {
   max-width: 1100px;
   margin: auto;
-  padding: 20px;
+  padding: 24px;
 }
 
 header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 28px;
 }
 
 header h1 {
@@ -27,117 +27,92 @@ header h1 {
   font-weight: 600;
 }
 
-.selectors {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
+/* Select */
 .selectors select {
   height: 32px;
-  padding: 0 28px 0 8px;
+  padding: 0 10px;
   border-radius: 6px;
-  border: 1px solid #334155;
-  background-color: #0f172a;
-  color: #e2e8f0;
-  font-size: 13px;
-  cursor: pointer;
-  min-width: 80px;
-
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23e2e8f0' height='10' viewBox='0 0 20 20' width='10' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
+  border: 1px solid #1f2937;
+  background: #0b1220;
+  color: white;
 }
 
+/* Grid */
 main {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
 }
 
+/* Panels */
 .panel {
-  background: #1e293b;
+  background: #111827;
+  border: 1px solid #1f2937;
   padding: 18px;
   border-radius: 12px;
-  display: flex;
-  flex-direction: column;
 }
 
-label {
-  font-size: 13px;
-  margin-bottom: 4px;
-  color: #94a3b8;
-}
-
+/* Inputs */
 input {
   width: 100%;
   height: 36px;
-  padding: 0 10px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   border-radius: 8px;
-  border: 1px solid #334155;
-  background: #0f172a;
+  border: 1px solid #1f2937;
+  background: #0b1220;
   color: white;
-  font-size: 14px;
+  padding: 0 10px;
 }
 
+/* Button */
 button {
   width: 100%;
   height: 36px;
+  border-radius: 8px;
   background: #22c55e;
   border: none;
-  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
 }
 
-button:hover {
-  background: #16a34a;
+/* Holidays */
+.holiday-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #1f2937;
 }
 
-/* 🔥 Mini inline button */
-.mini-btn {
+/* Icon button */
+.icon-btn {
+  width: 22px;
   height: 22px;
-  padding: 0 8px;
-  font-size: 11px;
   border-radius: 6px;
-  border: 1px solid #334155;
-  background: transparent;
-  color: #94a3b8;
+  border: 1px solid #1f2937;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
 }
 
-.mini-btn:hover {
+.icon-btn:hover {
   border-color: #22c55e;
   color: #22c55e;
 }
 
-.mini-btn.active {
+.icon-btn.active {
   background: #22c55e;
   color: #022c22;
   border: none;
 }
 
-.highlight {
-  font-weight: bold;
-  font-size: 18px;
+/* Result */
+.result p {
+  margin: 8px 0;
 }
 
-.good { color: #22c55e; }
-.warn { color: #facc15; }
-.bad { color: #ef4444; }
-
-.holiday-item {
-  padding: 6px 0;
-  border-bottom: 1px solid #334155;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.highlight {
+  font-weight: 600;
 }
 
 /* Tooltip */
@@ -145,7 +120,6 @@ button:hover {
   position: relative;
   margin-left: 6px;
   cursor: pointer;
-  color: #94a3b8;
 }
 
 .tooltip {
@@ -154,11 +128,9 @@ button:hover {
   top: -5px;
   left: 20px;
   background: #020617;
-  padding: 10px;
+  padding: 8px;
   border-radius: 6px;
   font-size: 12px;
-  width: 220px;
-  line-height: 1.4;
 }
 
 .info:hover .tooltip {
