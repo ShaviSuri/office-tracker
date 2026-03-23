@@ -225,8 +225,6 @@ function adjustOfficeDays(){
   const leaves=Number(leavesInput.value||0);
   officeInput.value=Math.max(0,total-leaves);
 }
-
-// 🔥 FINAL CALCULATION
 function calculate(){
   let total=getWorkingDays(yearSelect.value,monthSelect.value);
   total-=getDeclared(getKey());
@@ -284,8 +282,6 @@ function calculate(){
     </div>
 
     <p>You must attend <span class="highlight">${remaining}</span> more days</p>
-
-    <p>Max leaves allowed: <span class="highlight">${total-required}</span></p>
   `;
 
   document.getElementById("progressFill").style.width = percent + "%";
