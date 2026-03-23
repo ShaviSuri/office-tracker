@@ -5,6 +5,9 @@ const yearSelect = document.getElementById("yearSelect");
 const resultDiv = document.getElementById("result");
 const officeInput = document.getElementById("officeDays");
 
+// NEW: manual holiday input
+let manualHolidayCount = 0;
+
 function initSelectors() {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -45,7 +48,7 @@ function getKey() {
 function render() {
   renderHolidays();
   autoFillOfficeDays();
-  calculate(); // 🔥 auto calculate on load/change
+  calculate();
 }
 
 function renderHolidays() {
@@ -55,9 +58,26 @@ function renderHolidays() {
   const key = getKey();
 
   if (!holidays[key]) {
-    list.innerHTML = "<p style='color:orange'>No holidays configured</p>";
+    list.innerHTML = `
+      <p style="color:orange">No holidays configured</p>
+      <input type="number" id="manualHoliday" placeholder="Enter declared holidays count" />
+    `;
+
+    // attach listener
+    setTimeout(() => {
+      const input = document.getElementById("manualHoliday");
+      if (input) {
+        input.addEventListener("input", (e) => {
+          manualHolidayCount = Number(e.target.value || 0);
+          render();
+        });
+      }
+    }, 0);
+
     return;
   }
+
+  manualHolidayCount = 0;
 
   holidays[key].forEach(h => {
     const div = document.createElement("div");
@@ -80,14 +100,18 @@ function getWorkingDays(year, month) {
   return count;
 }
 
+function getDeclaredHolidayCount(key) {
+  if (holidays[key]) return holidays[key].length;
+  return manualHolidayCount;
+}
+
 function autoFillOfficeDays() {
   const key = getKey();
   const year = Number(yearSelect.value);
   const month = Number(monthSelect.value);
 
   let working = getWorkingDays(year, month);
-  const declared = holidays[key] || [];
-  working -= declared.length;
+  working -= getDeclaredHolidayCount(key);
 
   officeInput.value = working > 0 ? working : 0;
 }
@@ -97,17 +121,29 @@ function calculate() {
   const year = Number(yearSelect.value);
   const month = Number(monthSelect.value);
 
-  let working = getWorkingDays(year, month);
-  const declared = holidays[key] || [];
-  working -= declared.length;
+  let totalWorking = getWorkingDays(year, month);
+  const declared = getDeclaredHolidayCount(key);
+
+  totalWorking -= declared;
 
   const leaves = Number(document.getElementById("leaves").value || 0);
-  const office = Number(officeInput.value || 0);
+  let office = Number(officeInput.value || 0);
 
-  working -= leaves;
+  let effectiveWorking = totalWorking - leaves;
 
-  const percent = ((office / working) * 100).toFixed(2);
-  const required = Math.ceil(0.6 * working);
+  // 🔥 FIX: clamp office days
+  if (office > effectiveWorking) {
+    office = effectiveWorking;
+    officeInput.value = office;
+  }
+
+  if (effectiveWorking <= 0) {
+    resultDiv.innerHTML = "<span style='color:red'>Invalid data</span>";
+    return;
+  }
+
+  const percent = ((office / effectiveWorking) * 100).toFixed(2);
+  const required = Math.ceil(0.6 * effectiveWorking);
   const remaining = Math.max(0, required - office);
 
   let statusClass = "good";
@@ -115,7 +151,8 @@ function calculate() {
   else if (percent < 70) statusClass = "warn";
 
   resultDiv.innerHTML = `
-    <p>Working Days: <span class="highlight">${working}</span></p>
+    <p>Total Working Days: <span class="highlight">${totalWorking}</span></p>
+    <p>After Leaves: <span class="highlight">${effectiveWorking}</span></p>
     <p>Your Presence: <span class="highlight ${statusClass}">${percent}%</span></p>
     <p>Minimum Required: <span class="highlight">${required}</span></p>
     <p>Still Needed: <span class="highlight">${remaining}</span></p>
