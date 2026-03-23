@@ -63,9 +63,25 @@ button {
   cursor: pointer;
 }
 
-.result {
-  font-size: 15px;
-  line-height: 1.7;
+.result p {
+  margin: 8px 0;
+}
+
+.highlight {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.good {
+  color: #22c55e;
+}
+
+.warn {
+  color: #facc15;
+}
+
+.bad {
+  color: #ef4444;
 }
 
 .holiday-item {
@@ -73,8 +89,25 @@ button {
   border-bottom: 1px solid #334155;
 }
 
+/* Tooltip (instant, no delay) */
 .info {
+  position: relative;
   margin-left: 6px;
   cursor: pointer;
-  color: #94a3b8;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  top: -5px;
+  left: 20px;
+  background: #020617;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.info:hover .tooltip {
+  display: block;
 }
