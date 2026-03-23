@@ -5,12 +5,8 @@ const yearSelect = document.getElementById("yearSelect");
 const resultDiv = document.getElementById("result");
 const officeInput = document.getElementById("officeDays");
 
-// Populate selectors
 function initSelectors() {
-  const months = [
-    "Jan","Feb","Mar","Apr","May","Jun",
-    "Jul","Aug","Sep","Oct","Nov","Dec"
-  ];
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   months.forEach((m, i) => {
     const opt = document.createElement("option");
@@ -31,7 +27,6 @@ function initSelectors() {
   yearSelect.value = now.getFullYear();
 }
 
-// Load holidays
 fetch("holidays.json")
   .then(res => res.json())
   .then(data => {
@@ -50,7 +45,7 @@ function getKey() {
 function render() {
   renderHolidays();
   autoFillOfficeDays();
-  resultDiv.innerHTML = "Click calculate";
+  calculate(); // 🔥 auto calculate on load/change
 }
 
 function renderHolidays() {
@@ -85,14 +80,12 @@ function getWorkingDays(year, month) {
   return count;
 }
 
-// 🔥 Auto-fill logic (your requirement)
 function autoFillOfficeDays() {
   const key = getKey();
   const year = Number(yearSelect.value);
   const month = Number(monthSelect.value);
 
   let working = getWorkingDays(year, month);
-
   const declared = holidays[key] || [];
   working -= declared.length;
 
@@ -105,7 +98,6 @@ function calculate() {
   const month = Number(monthSelect.value);
 
   let working = getWorkingDays(year, month);
-
   const declared = holidays[key] || [];
   working -= declared.length;
 
@@ -114,22 +106,20 @@ function calculate() {
 
   working -= leaves;
 
-  if (working <= 0) {
-    resultDiv.innerHTML = "Invalid data";
-    return;
-  }
-
   const percent = ((office / working) * 100).toFixed(2);
   const required = Math.ceil(0.6 * working);
   const remaining = Math.max(0, required - office);
 
+  let statusClass = "good";
+  if (percent < 60) statusClass = "bad";
+  else if (percent < 70) statusClass = "warn";
+
   resultDiv.innerHTML = `
-    <p><strong>Working Days:</strong> ${working}</p>
-    <p><strong>Your %:</strong> ${percent}%</p>
-    <p><strong>Required for 60%:</strong> ${required}</p>
-    <p><strong>Remaining Needed:</strong> ${remaining}</p>
+    <p>Working Days: <span class="highlight">${working}</span></p>
+    <p>Your Presence: <span class="highlight ${statusClass}">${percent}%</span></p>
+    <p>Minimum Required: <span class="highlight">${required}</span></p>
+    <p>Still Needed: <span class="highlight">${remaining}</span></p>
   `;
 }
 
-// Init
 initSelectors();
