@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: system-ui, -apple-system;
+  font-family: system-ui;
   background: #0f172a;
   color: #e2e8f0;
 }
@@ -14,8 +14,7 @@ body {
 header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .selectors {
@@ -26,9 +25,9 @@ header {
 select {
   padding: 8px;
   border-radius: 8px;
-  border: none;
   background: #1e293b;
   color: white;
+  border: none;
 }
 
 main {
@@ -59,37 +58,24 @@ button {
   background: #22c55e;
   border: none;
   border-radius: 10px;
-  font-weight: bold;
   cursor: pointer;
 }
 
-.result p {
-  margin: 8px 0;
-}
-
 .highlight {
-  font-size: 18px;
   font-weight: bold;
+  font-size: 18px;
 }
 
-.good {
-  color: #22c55e;
-}
-
-.warn {
-  color: #facc15;
-}
-
-.bad {
-  color: #ef4444;
-}
+.good { color: #22c55e; }
+.warn { color: #facc15; }
+.bad { color: #ef4444; }
 
 .holiday-item {
   padding: 6px 0;
   border-bottom: 1px solid #334155;
 }
 
-/* Tooltip (instant, no delay) */
+/* Tooltip */
 .info {
   position: relative;
   margin-left: 6px;
@@ -102,10 +88,10 @@ button {
   top: -5px;
   left: 20px;
   background: #020617;
-  padding: 6px 10px;
+  padding: 10px;
   border-radius: 6px;
   font-size: 12px;
-  white-space: nowrap;
+  width: 220px;
 }
 
 .info:hover .tooltip {
