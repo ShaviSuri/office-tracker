@@ -1,31 +1,42 @@
 {
   "2026-01": [
-    { "date": "2026-01-01", "name": "New Year" },
-    { "date": "2026-01-15", "name": "Makar Sankranti / Pongal" },
-    { "date": "2026-01-26", "name": "Republic Day" }
+    { "date": "2026-01-01", "name": "New Year", "type": "declared" },
+    { "date": "2026-01-15", "name": "Makar Sankranti / Pongal", "type": "declared" },
+    { "date": "2026-01-26", "name": "Republic Day", "type": "declared" }
   ],
   "2026-02": [],
   "2026-03": [
-    { "date": "2026-03-19", "name": "Ugadi / Chaitra Sukladi" }
+    { "date": "2026-03-02", "name": "Holi", "type": "restricted" },
+    { "date": "2026-03-19", "name": "Ugadi / Chaitra Sukladi", "type": "declared" }
   ],
   "2026-04": [
-    { "date": "2026-04-03", "name": "Good Friday" }
+    { "date": "2026-04-03", "name": "Good Friday", "type": "declared" }
   ],
   "2026-05": [
-    { "date": "2026-05-28", "name": "Bakrid" }
+    { "date": "2026-05-01", "name": "Buddha Purnima / May Day", "type": "restricted" },
+    { "date": "2026-05-28", "name": "Bakrid", "type": "declared" }
   ],
-  "2026-06": [],
+  "2026-06": [
+    { "date": "2026-06-26", "name": "Last Day of Moharam", "type": "restricted" }
+  ],
   "2026-07": [],
-  "2026-08": [],
+  "2026-08": [
+    { "date": "2026-08-21", "name": "Varamahalakshmi Vrata", "type": "restricted" },
+    { "date": "2026-08-26", "name": "Eid-Milad / Onam", "type": "restricted" }
+  ],
   "2026-09": [
-    { "date": "2026-09-14", "name": "Ganesh Chaturthi" }
+    { "date": "2026-09-04", "name": "Sri Krishna Janmashtami", "type": "restricted" },
+    { "date": "2026-09-14", "name": "Ganesh Chaturthi", "type": "declared" }
   ],
   "2026-10": [
-    { "date": "2026-10-02", "name": "Gandhi Jayanthi" },
-    { "date": "2026-10-21", "name": "Vijayadashmi" }
+    { "date": "2026-10-02", "name": "Gandhi Jayanthi", "type": "declared" },
+    { "date": "2026-10-20", "name": "Maha Navami / Ayudha Pooja", "type": "restricted" },
+    { "date": "2026-10-21", "name": "Vijayadashmi", "type": "declared" }
   ],
   "2026-11": [
-    { "date": "2026-11-10", "name": "Balipadyami / Deepavali" }
+    { "date": "2026-11-10", "name": "Balipadyami / Deepavali", "type": "declared" }
   ],
-  "2026-12": []
+  "2026-12": [
+    { "date": "2026-12-25", "name": "Christmas", "type": "restricted" }
+  ]
 }
