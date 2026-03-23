@@ -1,10 +1,37 @@
 let holidays = {};
 
-const picker = document.getElementById("monthPicker");
+const monthSelect = document.getElementById("monthSelect");
+const yearSelect = document.getElementById("yearSelect");
 const resultDiv = document.getElementById("result");
 
-picker.value = new Date().toISOString().slice(0, 7);
+// Months
+const months = [
+  "01","02","03","04","05","06",
+  "07","08","09","10","11","12"
+];
 
+// Populate selectors
+function initSelectors() {
+  months.forEach((m, i) => {
+    const option = document.createElement("option");
+    option.value = m;
+    option.text = new Date(2026, i).toLocaleString("default", { month: "short" });
+    monthSelect.appendChild(option);
+  });
+
+  for (let y = 2025; y <= 2030; y++) {
+    const option = document.createElement("option");
+    option.value = y;
+    option.text = y;
+    yearSelect.appendChild(option);
+  }
+
+  const now = new Date();
+  monthSelect.value = String(now.getMonth() + 1).padStart(2, "0");
+  yearSelect.value = now.getFullYear();
+}
+
+// Load holidays
 fetch("holidays.json")
   .then(res => res.json())
   .then(data => {
@@ -12,26 +39,32 @@ fetch("holidays.json")
     render();
   });
 
-picker.addEventListener("change", render);
+monthSelect.addEventListener("change", render);
+yearSelect.addEventListener("change", render);
+
 document.getElementById("calcBtn").addEventListener("click", calculate);
+
+function getKey() {
+  return `${yearSelect.value}-${monthSelect.value}`;
+}
 
 function render() {
   renderHolidays();
-  resultDiv.innerHTML = "";
+  resultDiv.innerHTML = "Click calculate";
 }
 
 function renderHolidays() {
   const list = document.getElementById("holidayList");
   list.innerHTML = "";
 
-  const month = picker.value;
+  const key = getKey();
 
-  if (!holidays[month]) {
+  if (!holidays[key]) {
     list.innerHTML = "<p style='color:orange'>No holidays configured</p>";
     return;
   }
 
-  holidays[month].forEach(h => {
+  holidays[key].forEach(h => {
     const div = document.createElement("div");
     div.className = "holiday-item";
     div.innerText = `${h.date} — ${h.name}`;
@@ -41,9 +74,9 @@ function renderHolidays() {
 
 function getWorkingDays(year, month) {
   let count = 0;
-  let date = new Date(year, month, 1);
+  let date = new Date(year, month - 1, 1);
 
-  while (date.getMonth() === month) {
+  while (date.getMonth() === month - 1) {
     const day = date.getDay();
     if (day !== 0 && day !== 6) count++;
     date.setDate(date.getDate() + 1);
@@ -53,11 +86,13 @@ function getWorkingDays(year, month) {
 }
 
 function calculate() {
-  const [year, month] = picker.value.split("-").map(Number);
+  const key = getKey();
+  const year = Number(yearSelect.value);
+  const month = Number(monthSelect.value);
 
-  let working = getWorkingDays(year, month - 1);
+  let working = getWorkingDays(year, month);
 
-  const declared = holidays[picker.value] || [];
+  const declared = holidays[key] || [];
   working -= declared.length;
 
   const leaves = Number(document.getElementById("leaves").value || 0);
@@ -81,3 +116,6 @@ function calculate() {
     <p><strong>Remaining:</strong> ${remaining}</p>
   `;
 }
+
+// Init
+initSelectors();
