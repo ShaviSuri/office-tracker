@@ -1,53 +1,65 @@
 body {
-margin:0;
-font-family: 'Segoe UI';
-background:#0f172a;
-color:white;
+  margin: 0;
+  font-family: system-ui, -apple-system;
+  background: #0f172a;
+  color: #e2e8f0;
 }
 
-.container {
-padding:20px;
-max-width:1100px;
-margin:auto;
+.app {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
 }
 
-.header {
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
 }
 
-.grid {
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:20px;
+h1 {
+  font-size: 22px;
 }
 
-.left, .center, .right {
-background:#1e293b;
-padding:20px;
-border-radius:12px;
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.panel {
+  background: #1e293b;
+  padding: 18px;
+  border-radius: 12px;
 }
 
 input {
-width:100%;
-padding:10px;
-margin-bottom:10px;
-border:none;
-border-radius:8px;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #0f172a;
+  color: white;
 }
 
 button {
-width:100%;
-padding:12px;
-background:#22c55e;
-border:none;
-border-radius:10px;
-cursor:pointer;
+  width: 100%;
+  padding: 12px;
+  background: #22c55e;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-#result {
-font-size:16px;
-line-height:1.6;
+.result {
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.holiday-item {
+  padding: 6px 0;
+  border-bottom: 1px solid #334155;
 }
