@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Office Presence Planner</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+<h1>🚀 Office Presence Planner</h1>
+
+<div class="top">
+<input type="month" id="monthPicker">
+<button onclick="calculate()">Calculate</button>
+</div>
+
+<div id="statusBar"></div>
+
+<div id="calendar"></div>
+
+<div class="legend">
+<span class="box office"></span> Office
+<span class="box leave"></span> Leave
+<span class="box holiday"></span> Holiday
+</div>
+
+<div id="result" class="result"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
