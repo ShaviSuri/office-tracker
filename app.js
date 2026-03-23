@@ -168,15 +168,15 @@ function calculate() {
   const leaves = Number(leavesInput.value || 0);
   const officeInputValue = Number(officeInput.value || 0);
 
-  let effectiveWorking = totalWorking - leaves;
+  const effectiveWorking = totalWorking - leaves;
 
   if (effectiveWorking <= 0) {
     resultDiv.innerHTML = "<span style='color:red'>Invalid data</span>";
     return;
   }
 
-  // 🔥 REALISTIC CALCULATION (without blocking user)
-  const effectiveOffice = Math.min(officeInputValue, effectiveWorking);
+  // ✅ FIXED logic
+  const effectiveOffice = Math.min(officeInputValue, totalWorking);
 
   const percent = ((effectiveOffice / effectiveWorking) * 100).toFixed(2);
   const required = Math.ceil(0.6 * effectiveWorking);
@@ -186,9 +186,9 @@ function calculate() {
   if (percent < 60) statusClass = "bad";
   else if (percent < 70) statusClass = "warn";
 
-  // 🔥 Optional warning if user exceeds realistic limit
+  // 🔥 Smarter warning (only when truly unrealistic)
   const warning =
-    officeInputValue > effectiveWorking
+    officeInputValue > totalWorking
       ? `<p style="color:#facc15">Office days exceed possible working days.</p>`
       : "";
 
