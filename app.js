@@ -7,6 +7,16 @@ const resultDiv = document.getElementById("result");
 const officeInput = document.getElementById("officeDays");
 const leavesInput = document.getElementById("leaves");
 
+// 🔒 enforce numeric only
+function enforceNumber(input) {
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/[^0-9]/g, "");
+  });
+}
+enforceNumber(officeInput);
+enforceNumber(leavesInput);
+
+// Init selectors
 function initSelectors() {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -29,6 +39,7 @@ function initSelectors() {
   yearSelect.value = now.getFullYear();
 }
 
+// Load holidays
 fetch("holidays.json")
   .then(res => res.json())
   .then(data => {
@@ -45,45 +56,40 @@ function getKey() {
 }
 
 function render() {
-  resetInputs(); // 🔥 reset every time
+  resetInputs();
   renderHolidays();
   autoFillOfficeDays();
   calculate();
 }
 
-// 🔥 Reset inputs on refresh / month change
 function resetInputs() {
   leavesInput.value = 0;
   manualHolidayCount = 0;
 }
 
-// Holiday rendering logic
 function renderHolidays() {
   const list = document.getElementById("holidayList");
   list.innerHTML = "";
 
   const key = getKey();
 
-  // CASE 1: Month exists but empty → show message
   if (holidays[key] && holidays[key].length === 0) {
     list.innerHTML = "<p>No declared holidays this month</p>";
     return;
   }
 
-  // CASE 2: Month not configured → manual input
   if (!holidays[key]) {
     const container = document.createElement("div");
 
     const msg = document.createElement("p");
     msg.style.color = "orange";
-    msg.innerText = "Future month — holidays not configured";
-
-    const label = document.createElement("label");
-    label.innerText = "Declared Holidays (Manual)";
+    msg.innerText = "Future month — not configured";
 
     const input = document.createElement("input");
     input.type = "number";
-    input.placeholder = "Enter count";
+    input.placeholder = "Enter declared holidays";
+
+    enforceNumber(input);
 
     input.addEventListener("input", (e) => {
       manualHolidayCount = Number(e.target.value || 0);
@@ -91,14 +97,11 @@ function renderHolidays() {
     });
 
     container.appendChild(msg);
-    container.appendChild(label);
     container.appendChild(input);
-
     list.appendChild(container);
     return;
   }
 
-  // CASE 3: Normal configured holidays
   holidays[key].forEach(h => {
     const div = document.createElement("div");
     div.className = "holiday-item";
@@ -125,7 +128,6 @@ function getDeclaredHolidayCount(key) {
   return manualHolidayCount;
 }
 
-// Auto-fill office days
 function autoFillOfficeDays() {
   const key = getKey();
   const year = Number(yearSelect.value);
@@ -152,7 +154,6 @@ function calculate() {
 
   let effectiveWorking = totalWorking - leaves;
 
-  // Clamp office
   if (office > effectiveWorking) {
     office = effectiveWorking;
     officeInput.value = office;
