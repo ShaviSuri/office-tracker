@@ -192,10 +192,17 @@ function calculate() {
 
   const effectiveWorking = totalWorking - leaves;
 
-  if (effectiveWorking <= 0) {
-    resultDiv.innerHTML = "<span style='color:red'>Invalid data</span>";
-    return;
-  }
+if (effectiveWorking === 0) {
+  resultDiv.innerHTML = `
+    <p>Total Working Days: <span class="highlight">${totalWorking}</span></p>
+    <p>After Leaves: <span class="highlight">0</span></p>
+    <p>Your Presence: <span class="highlight">0%</span></p>
+    <p>Minimum Required: <span class="highlight">0</span></p>
+    <p>Still Needed: <span class="highlight">0</span></p>
+    <p style="color:#94a3b8">No working days left after leaves</p>
+  `;
+  return;
+}
 
   const effectiveOffice = Math.min(officeInputValue, totalWorking);
 
