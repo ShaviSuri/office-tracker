@@ -178,7 +178,8 @@ function calculate() {
   // ✅ FIXED logic
   const effectiveOffice = Math.min(officeInputValue, totalWorking);
 
-  const percent = ((effectiveOffice / effectiveWorking) * 100).toFixed(2);
+  let rawPercent = (effectiveOffice / effectiveWorking) * 100;
+  const percent = Math.min(rawPercent, 100).toFixed(2);
   const required = Math.ceil(0.6 * effectiveWorking);
   const remaining = Math.max(0, required - effectiveOffice);
 
