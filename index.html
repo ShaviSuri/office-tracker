@@ -26,7 +26,10 @@
         Declared Holidays
         <span class="info">
           ⓘ
-          <span class="tooltip">Company declared holidays. Excluded from working days.</span>
+          <span class="tooltip">
+            • Declared Holidays: Excluded from working days<br>
+            • Restricted Holidays: Optional holidays (do not affect calculation unless taken as leave)
+          </span>
         </span>
       </h3>
       <div id="holidayList"></div>
@@ -40,7 +43,9 @@
         Office Days
         <span class="info">
           ⓘ
-          <span class="tooltip">Calculated with declared holidays considered. You can adjust.</span>
+          <span class="tooltip">
+            Calculated after considering declared holidays. You can adjust.
+          </span>
         </span>
       </label>
       <input type="number" id="officeDays" min="0" />
@@ -64,7 +69,7 @@
         <span class="info">
           ⓘ
           <span class="tooltip">
-            • Working Days: Weekdays minus holidays<br>
+            • Working Days: Weekdays minus declared holidays<br>
             • After Leaves: Remaining working days<br>
             • Presence: Office ÷ available days<br>
             • Required: Minimum 60%
