@@ -1,12 +1,10 @@
 let holidays = {};
+let manualHolidayCount = 0;
 
 const monthSelect = document.getElementById("monthSelect");
 const yearSelect = document.getElementById("yearSelect");
 const resultDiv = document.getElementById("result");
 const officeInput = document.getElementById("officeDays");
-
-// NEW: manual holiday input
-let manualHolidayCount = 0;
 
 function initSelectors() {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -30,6 +28,7 @@ function initSelectors() {
   yearSelect.value = now.getFullYear();
 }
 
+// Load holidays
 fetch("holidays.json")
   .then(res => res.json())
   .then(data => {
@@ -48,9 +47,10 @@ function getKey() {
 function render() {
   renderHolidays();
   autoFillOfficeDays();
-  calculate();
+  calculate(); // auto update
 }
 
+// ✅ FIXED (no re-render loop issue)
 function renderHolidays() {
   const list = document.getElementById("holidayList");
   list.innerHTML = "";
@@ -58,22 +58,30 @@ function renderHolidays() {
   const key = getKey();
 
   if (!holidays[key]) {
-    list.innerHTML = `
-      <p style="color:orange">No holidays configured</p>
-      <input type="number" id="manualHoliday" placeholder="Enter declared holidays count" />
-    `;
+    const container = document.createElement("div");
 
-    // attach listener
-    setTimeout(() => {
-      const input = document.getElementById("manualHoliday");
-      if (input) {
-        input.addEventListener("input", (e) => {
-          manualHolidayCount = Number(e.target.value || 0);
-          render();
-        });
-      }
-    }, 0);
+    const msg = document.createElement("p");
+    msg.style.color = "orange";
+    msg.innerText = "No holidays configured";
 
+    const label = document.createElement("label");
+    label.innerText = "Declared Holidays (Manual)";
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.placeholder = "Enter count";
+    input.value = manualHolidayCount || "";
+
+    input.addEventListener("input", (e) => {
+      manualHolidayCount = Number(e.target.value || 0);
+      calculate(); // only update result, no full re-render
+    });
+
+    container.appendChild(msg);
+    container.appendChild(label);
+    container.appendChild(input);
+
+    list.appendChild(container);
     return;
   }
 
@@ -105,6 +113,7 @@ function getDeclaredHolidayCount(key) {
   return manualHolidayCount;
 }
 
+// Auto-fill office days
 function autoFillOfficeDays() {
   const key = getKey();
   const year = Number(yearSelect.value);
@@ -116,6 +125,7 @@ function autoFillOfficeDays() {
   officeInput.value = working > 0 ? working : 0;
 }
 
+// Main calculation
 function calculate() {
   const key = getKey();
   const year = Number(yearSelect.value);
@@ -131,7 +141,7 @@ function calculate() {
 
   let effectiveWorking = totalWorking - leaves;
 
-  // 🔥 FIX: clamp office days
+  // ✅ FIX: prevent >100%
   if (office > effectiveWorking) {
     office = effectiveWorking;
     officeInput.value = office;
@@ -159,4 +169,5 @@ function calculate() {
   `;
 }
 
+// Init
 initSelectors();
