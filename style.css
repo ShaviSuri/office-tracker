@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box; /* 🔥 critical fix */
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system;
@@ -24,7 +28,7 @@ header h1 {
   font-weight: 600;
 }
 
-/* Month / Year selectors (FIXED) */
+/* Selectors */
 .selectors {
   display: flex;
   gap: 6px;
@@ -44,15 +48,6 @@ header h1 {
   min-width: 80px;
 }
 
-.selectors select:hover {
-  border-color: #64748b;
-}
-
-.selectors select:focus {
-  outline: none;
-  border-color: #22c55e;
-}
-
 /* Layout */
 main {
   display: grid;
@@ -65,6 +60,15 @@ main {
   background: #1e293b;
   padding: 18px;
   border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Labels */
+label {
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #94a3b8;
 }
 
 /* Inputs */
@@ -72,7 +76,7 @@ input {
   width: 100%;
   height: 36px;
   padding: 0 10px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   border-radius: 8px;
   border: 1px solid #334155;
   background: #0f172a;
@@ -80,18 +84,18 @@ input {
   font-size: 14px;
 }
 
-input:focus {
-  outline: none;
-  border-color: #22c55e;
+/* Fix overflow issue */
+input, button {
+  max-width: 100%;
 }
 
 /* Button */
 button {
   width: 100%;
-  height: 38px;
+  height: 36px; /* 🔥 same as input */
   background: #22c55e;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -123,7 +127,7 @@ button:hover {
   color: #ef4444;
 }
 
-/* Holiday list */
+/* Holidays */
 .holiday-item {
   padding: 6px 0;
   border-bottom: 1px solid #334155;
