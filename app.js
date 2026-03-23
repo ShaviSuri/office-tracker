@@ -8,9 +8,8 @@ const yearSelect = document.getElementById("yearSelect");
 const resultDiv = document.getElementById("result");
 const officeInput = document.getElementById("officeDays");
 const leavesInput = document.getElementById("leaves");
-const progressFill = document.getElementById("progressFill");
 
-// Init
+// Init selectors
 function initSelectors() {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -33,7 +32,7 @@ function initSelectors() {
   yearSelect.value=now.getFullYear();
 }
 
-// Load
+// Load holidays
 fetch("holidays.json")
 .then(r=>r.json())
 .then(data=>{
@@ -44,12 +43,14 @@ fetch("holidays.json")
 monthSelect.addEventListener("change", render);
 yearSelect.addEventListener("change", render);
 
+// Leaves input
 leavesInput.addEventListener("input", ()=>{
   leavesInput.dataset.manual = leavesInput.value;
   adjustOfficeDays();
   calculate();
 });
 
+// Office override
 officeInput.addEventListener("input", ()=>{
   userModifiedOffice = true;
   calculate();
@@ -80,6 +81,7 @@ function renderHolidays(){
 
   const key=getKey();
 
+  // No config
   if(!holidays[key]){
     const msg=document.createElement("p");
     msg.style.color="orange";
@@ -103,11 +105,13 @@ function renderHolidays(){
   const declared=holidays[key].filter(h=>h.type==="declared");
   const restricted=holidays[key].filter(h=>h.type==="restricted");
 
+  // Empty month
   if(declared.length===0 && restricted.length===0){
     list.innerHTML="<p>No declared or restricted holidays this month</p>";
     return;
   }
 
+  // Declared
   if(declared.length){
     list.innerHTML += "<div style='font-weight:600'>Declared</div>";
     declared.forEach(h=>{
@@ -115,6 +119,7 @@ function renderHolidays(){
     });
   }
 
+  // Restricted
   if(restricted.length){
     list.innerHTML += "<div style='font-weight:600;margin-top:10px;color:#94a3b8'>Restricted</div>";
 
@@ -170,7 +175,22 @@ function renderCalendar(){
   const key=getKey();
   const list=holidays[key]||[];
 
+  // Header SMTWTFS
+  const days = ["S","M","T","W","T","F","S"];
+  days.forEach(d=>{
+    const head=document.createElement("div");
+    head.className="day header";
+    head.innerText=d;
+    cal.appendChild(head);
+  });
+
   let date=new Date(year,month,1);
+
+  // offset
+  const startDay=date.getDay();
+  for(let i=0;i<startDay;i++){
+    cal.appendChild(document.createElement("div"));
+  }
 
   while(date.getMonth()===month){
     const d=date.getDate();
@@ -187,6 +207,8 @@ function renderCalendar(){
       if(hd.getDate()===d){
         if(h.type==="declared") cell.classList.add("declared");
         if(h.type==="restricted") cell.classList.add("restricted");
+
+        cell.title = h.name;
       }
     });
 
@@ -225,6 +247,8 @@ function adjustOfficeDays(){
   const leaves=Number(leavesInput.value||0);
   officeInput.value=Math.max(0,total-leaves);
 }
+
+// Final calculation
 function calculate(){
   let total=getWorkingDays(yearSelect.value,monthSelect.value);
   total-=getDeclared(getKey());
@@ -277,14 +301,8 @@ function calculate(){
 
     <p>Your Presence: <span class="highlight ${cls}">${percent}%</span></p>
 
-    <div class="progress-bar">
-      <div id="progressFill"></div>
-    </div>
-
     <p>You must attend <span class="highlight">${remaining}</span> more days</p>
   `;
-
-  document.getElementById("progressFill").style.width = percent + "%";
 }
 
 initSelectors();
