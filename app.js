@@ -31,7 +31,6 @@ function initSelectors() {
   yearSelect.value=now.getFullYear();
 }
 
-// Load
 fetch("holidays.json")
 .then(r=>r.json())
 .then(data=>{
@@ -49,7 +48,10 @@ officeInput.addEventListener("input", ()=>{
 
 leavesInput.addEventListener("input", calculate);
 
-// Render
+function getKey(){
+  return `${yearSelect.value}-${monthSelect.value}`;
+}
+
 function render(){
   selectedRestricted=[];
   leavesInput.value=0;
@@ -59,39 +61,66 @@ function render(){
   calculate();
 }
 
-function renderHolidays(){
-  const list=document.getElementById("holidayList");
-  list.innerHTML="";
+function renderHolidays() {
+  const list = document.getElementById("holidayList");
+  list.innerHTML = "";
 
-  const key=`${yearSelect.value}-${monthSelect.value}`;
-  if(!holidays[key]) return;
+  const key = getKey();
+  if (!holidays[key]) return;
 
-  holidays[key].forEach(h=>{
-    const div=document.createElement("div");
-    div.className="holiday-item";
+  const declared = holidays[key].filter(h => h.type === "declared");
+  const restricted = holidays[key].filter(h => h.type === "restricted");
 
-    const text=document.createElement("span");
-    text.innerText=`${h.date} — ${h.name}`;
+  if (declared.length) {
+    const title = document.createElement("div");
+    title.className = "section-title";
+    title.innerText = "Declared";
+    list.appendChild(title);
 
-    const btn=document.createElement("div");
-    btn.className="icon-btn";
-    btn.innerText= selectedRestricted.includes(h.date) ? "✓" : "+";
+    declared.forEach(h => {
+      const div = document.createElement("div");
+      div.className = "holiday-item";
+      div.innerText = `${h.date} — ${h.name}`;
+      list.appendChild(div);
+    });
+  }
 
-    btn.onclick=()=>{
-      if(selectedRestricted.includes(h.date)){
-        selectedRestricted=selectedRestricted.filter(d=>d!==h.date);
-      } else {
-        selectedRestricted.push(h.date);
-      }
-      leavesInput.value=selectedRestricted.length;
-      renderHolidays();
-      calculate();
-    };
+  if (restricted.length) {
+    const title = document.createElement("div");
+    title.className = "section-title muted";
+    title.innerText = "Restricted";
+    list.appendChild(title);
 
-    div.appendChild(text);
-    if(h.type==="restricted") div.appendChild(btn);
-    list.appendChild(div);
-  });
+    restricted.forEach(h => {
+      const isSelected = selectedRestricted.includes(h.date);
+
+      const div = document.createElement("div");
+      div.className = "holiday-item";
+
+      const text = document.createElement("span");
+      text.innerText = `${h.date} — ${h.name}`;
+      text.className = "muted";
+
+      const btn = document.createElement("div");
+      btn.className = "icon-add";
+      btn.innerText = isSelected ? "✓" : "+";
+
+      btn.onclick = () => {
+        if (isSelected) {
+          selectedRestricted = selectedRestricted.filter(d => d !== h.date);
+        } else {
+          selectedRestricted.push(h.date);
+        }
+        leavesInput.value = selectedRestricted.length;
+        renderHolidays();
+        calculate();
+      };
+
+      div.appendChild(text);
+      div.appendChild(btn);
+      list.appendChild(div);
+    });
+  }
 }
 
 function getWorkingDays(y,m){
@@ -108,14 +137,14 @@ function getDeclared(key){
 }
 
 function autoFillOffice(){
-  const key=`${yearSelect.value}-${monthSelect.value}`;
+  const key=getKey();
   let w=getWorkingDays(yearSelect.value,monthSelect.value);
   w-=getDeclared(key);
   officeInput.value=w;
 }
 
 function calculate(){
-  const key=`${yearSelect.value}-${monthSelect.value}`;
+  const key=getKey();
   let total=getWorkingDays(yearSelect.value,monthSelect.value);
   total-=getDeclared(key);
 
@@ -137,11 +166,11 @@ function calculate(){
   const remaining=Math.max(0,required-effOffice);
 
   resultDiv.innerHTML=`
-    <p>Total: <span class="highlight">${total}</span></p>
-    <p>After Leaves: <span class="highlight">${effective}</span></p>
-    <p>Presence: <span class="highlight">${percent}%</span></p>
-    <p>Required: <span class="highlight">${required}</span></p>
-    <p>Remaining: <span class="highlight">${remaining}</span></p>
+    <p>Total Working Days: <b>${total}</b></p>
+    <p>After Leaves: <b>${effective}</b></p>
+    <p>Your Presence: <b>${percent}%</b></p>
+    <p>Minimum Required: <b>${required}</b></p>
+    <p>Still Needed: <b>${remaining}</b></p>
   `;
 }
 
