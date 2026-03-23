@@ -1,5 +1,6 @@
 let holidays = {};
 let manualHolidayCount = 0;
+let userModifiedOffice = false; 
 
 const monthSelect = document.getElementById("monthSelect");
 const yearSelect = document.getElementById("yearSelect");
@@ -16,10 +17,13 @@ function enforceNumber(input) {
 enforceNumber(officeInput);
 enforceNumber(leavesInput);
 
-// ⚡ Real-time updates
-officeInput.addEventListener("input", calculate);
+// 🔥 Office input (manual override)
+officeInput.addEventListener("input", () => {
+  userModifiedOffice = true;
+  calculate();
+});
 
-// 🔥 UPDATED: leaves triggers auto adjust + calculate
+// 🔥 Leaves input → auto adjust only if NOT overridden
 leavesInput.addEventListener("input", () => {
   adjustOfficeDays();
   calculate();
@@ -79,6 +83,7 @@ function render() {
 function resetInputs() {
   leavesInput.value = 0;
   manualHolidayCount = 0;
+  userModifiedOffice = false; // 🔥 reset override on month change
 }
 
 // Holiday UI
@@ -156,8 +161,10 @@ function autoFillOfficeDays() {
   officeInput.value = working > 0 ? working : 0;
 }
 
-// 🔥 NEW: adjust office days based on leaves
+// 🔥 Adjust office days only if user hasn’t overridden
 function adjustOfficeDays() {
+  if (userModifiedOffice) return;
+
   const key = getKey();
   const year = Number(yearSelect.value);
   const month = Number(monthSelect.value);
@@ -192,17 +199,18 @@ function calculate() {
 
   const effectiveWorking = totalWorking - leaves;
 
-if (effectiveWorking === 0) {
-  resultDiv.innerHTML = `
-    <p>Total Working Days: <span class="highlight">${totalWorking}</span></p>
-    <p>After Leaves: <span class="highlight">0</span></p>
-    <p>Your Presence: <span class="highlight">0%</span></p>
-    <p>Minimum Required: <span class="highlight">0</span></p>
-    <p>Still Needed: <span class="highlight">0</span></p>
-    <p style="color:#94a3b8">No working days left after leaves</p>
-  `;
-  return;
-}
+  // ✅ Handle full leave case (valid scenario)
+  if (effectiveWorking === 0) {
+    resultDiv.innerHTML = `
+      <p>Total Working Days: <span class="highlight">${totalWorking}</span></p>
+      <p>After Leaves: <span class="highlight">0</span></p>
+      <p>Your Presence: <span class="highlight">0%</span></p>
+      <p>Minimum Required: <span class="highlight">0</span></p>
+      <p>Still Needed: <span class="highlight">0</span></p>
+      <p style="color:#94a3b8">No working days left after leaves</p>
+    `;
+    return;
+  }
 
   const effectiveOffice = Math.min(officeInputValue, totalWorking);
 
