@@ -24,40 +24,43 @@
     <section class="panel">
       <h3>
         Declared Holidays
-        <span class="info" title="These are company declared holidays. They are excluded from working days.">ⓘ</span>
+        <span class="info">
+          ⓘ
+          <span class="tooltip">Company declared holidays. These are excluded from working days.</span>
+        </span>
       </h3>
       <div id="holidayList"></div>
     </section>
 
     <!-- Inputs -->
     <section class="panel">
-      <h3>
-        Your Plan
-        <span class="info" title="Office days are auto-filled based on working days. You can adjust manually.">ⓘ</span>
-      </h3>
+      <h3>Your Plan</h3>
 
       <label>
         Office Days
-        <span class="info" title="Auto-calculated working days (excluding weekends & holidays). Adjust if needed.">ⓘ</span>
+        <span class="info">
+          ⓘ
+          <span class="tooltip">Auto-filled working days (excluding weekends & holidays). You can edit.</span>
+        </span>
       </label>
       <input type="number" id="officeDays" />
 
       <label>
         Leaves & Restricted Holidays
-        <span class="info" title="Leaves + optional holidays you take. These reduce working days.">ⓘ</span>
+        <span class="info">
+          ⓘ
+          <span class="tooltip">Leaves reduce your working days.</span>
+        </span>
       </label>
       <input type="number" id="leaves" value="0" />
 
-      <button id="calcBtn">Calculate</button>
+      <button id="calcBtn">Recalculate</button>
     </section>
 
-    <!-- Result -->
+    <!-- Summary -->
     <section class="panel result">
-      <h3>
-        Summary
-        <span class="info" title="Final calculation based on your inputs and company rules.">ⓘ</span>
-      </h3>
-      <div id="result">Select month and calculate</div>
+      <h3>Monthly Summary</h3>
+      <div id="result"></div>
     </section>
 
   </main>
