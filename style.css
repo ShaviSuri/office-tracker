@@ -18,10 +18,6 @@ header {
   margin-bottom: 25px;
 }
 
-h1 {
-  font-size: 22px;
-}
-
 .selectors {
   display: flex;
   gap: 10px;
@@ -75,4 +71,10 @@ button {
 .holiday-item {
   padding: 6px 0;
   border-bottom: 1px solid #334155;
+}
+
+.info {
+  margin-left: 6px;
+  cursor: pointer;
+  color: #94a3b8;
 }
