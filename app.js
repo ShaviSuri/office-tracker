@@ -155,7 +155,6 @@ function autoFillOfficeDays() {
   officeInput.value = working > 0 ? working : 0;
 }
 
-// 🔥 Main calculation
 function calculate() {
   const key = getKey();
   const year = Number(yearSelect.value);
@@ -167,30 +166,34 @@ function calculate() {
   totalWorking -= declared;
 
   const leaves = Number(leavesInput.value || 0);
-  let office = Number(officeInput.value || 0);
+  const officeInputValue = Number(officeInput.value || 0);
 
   let effectiveWorking = totalWorking - leaves;
-
-  // Prevent >100%
-  if (office > effectiveWorking) {
-    office = effectiveWorking;
-    officeInput.value = office;
-  }
 
   if (effectiveWorking <= 0) {
     resultDiv.innerHTML = "<span style='color:red'>Invalid data</span>";
     return;
   }
 
-  const percent = ((office / effectiveWorking) * 100).toFixed(2);
+  // 🔥 REALISTIC CALCULATION (without blocking user)
+  const effectiveOffice = Math.min(officeInputValue, effectiveWorking);
+
+  const percent = ((effectiveOffice / effectiveWorking) * 100).toFixed(2);
   const required = Math.ceil(0.6 * effectiveWorking);
-  const remaining = Math.max(0, required - office);
+  const remaining = Math.max(0, required - effectiveOffice);
 
   let statusClass = "good";
   if (percent < 60) statusClass = "bad";
   else if (percent < 70) statusClass = "warn";
 
+  // 🔥 Optional warning if user exceeds realistic limit
+  const warning =
+    officeInputValue > effectiveWorking
+      ? `<p style="color:#facc15">⚠️ Office days exceed possible working days. Using max allowed.</p>`
+      : "";
+
   resultDiv.innerHTML = `
+    ${warning}
     <p>Total Working Days: <span class="highlight">${totalWorking}</span></p>
     <p>After Leaves: <span class="highlight">${effectiveWorking}</span></p>
     <p>Your Presence: <span class="highlight ${statusClass}">${percent}%</span></p>
