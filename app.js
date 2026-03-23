@@ -189,7 +189,7 @@ function calculate() {
   // 🔥 Optional warning if user exceeds realistic limit
   const warning =
     officeInputValue > effectiveWorking
-      ? `<p style="color:#facc15">⚠️ Office days exceed possible working days. Using max allowed.</p>`
+      ? `<p style="color:#facc15">Office days exceed possible working days.</p>`
       : "";
 
   resultDiv.innerHTML = `
