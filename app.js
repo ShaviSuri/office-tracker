@@ -1,20 +1,22 @@
 let holidays = {};
 let selectedRestricted = [];
 let userModifiedOffice = false;
+let manualHolidayCount = 0;
 
 const monthSelect = document.getElementById("monthSelect");
 const yearSelect = document.getElementById("yearSelect");
 const resultDiv = document.getElementById("result");
 const officeInput = document.getElementById("officeDays");
 const leavesInput = document.getElementById("leaves");
+const progressFill = document.getElementById("progressFill");
+const safeLeavesDiv = document.getElementById("safeLeaves");
 
-// Init
 function initSelectors() {
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   months.forEach((m,i)=>{
     const opt=document.createElement("option");
-    opt.value=String(i+1).padStart(2,"0");
+    opt.value=i;
     opt.text=m;
     monthSelect.appendChild(opt);
   });
@@ -27,7 +29,7 @@ function initSelectors() {
   }
 
   const now=new Date();
-  monthSelect.value=String(now.getMonth()+1).padStart(2,"0");
+  monthSelect.value=now.getMonth();
   yearSelect.value=now.getFullYear();
 }
 
@@ -41,136 +43,107 @@ fetch("holidays.json")
 monthSelect.addEventListener("change", render);
 yearSelect.addEventListener("change", render);
 
+leavesInput.addEventListener("input", ()=>{
+  calculate();
+});
+
 officeInput.addEventListener("input", ()=>{
   userModifiedOffice=true;
   calculate();
 });
 
-leavesInput.addEventListener("input", calculate);
-
 function getKey(){
-  return `${yearSelect.value}-${monthSelect.value}`;
+  const m = String(Number(monthSelect.value)+1).padStart(2,"0");
+  return `${yearSelect.value}-${m}`;
 }
 
 function render(){
-  selectedRestricted=[];
-  leavesInput.value=0;
-  userModifiedOffice=false;
-  renderHolidays();
-  autoFillOffice();
+  renderCalendar();
   calculate();
 }
 
-function renderHolidays() {
-  const list = document.getElementById("holidayList");
-  list.innerHTML = "";
+// Calendar
+function renderCalendar(){
+  const cal=document.getElementById("calendar");
+  cal.innerHTML="";
 
-  const key = getKey();
-  if (!holidays[key]) return;
+  const year=yearSelect.value;
+  const month=Number(monthSelect.value);
 
-  const declared = holidays[key].filter(h => h.type === "declared");
-  const restricted = holidays[key].filter(h => h.type === "restricted");
+  const key=getKey();
+  const list=holidays[key]||[];
 
-  if (declared.length) {
-    const title = document.createElement("div");
-    title.className = "section-title";
-    title.innerText = "Declared";
-    list.appendChild(title);
+  const date=new Date(year,month,1);
 
-    declared.forEach(h => {
-      const div = document.createElement("div");
-      div.className = "holiday-item";
-      div.innerText = `${h.date} — ${h.name}`;
-      list.appendChild(div);
+  while(date.getMonth()===month){
+    const d=date.getDate();
+    const day=date.getDay();
+
+    const cell=document.createElement("div");
+    cell.className="day";
+    cell.innerText=d;
+
+    if(day===0||day===6) cell.classList.add("weekend");
+
+    list.forEach(h=>{
+      if(new Date(h.date).getDate()===d){
+        if(h.type==="declared") cell.classList.add("declared");
+        if(h.type==="restricted") cell.classList.add("restricted");
+      }
     });
-  }
 
-  if (restricted.length) {
-    const title = document.createElement("div");
-    title.className = "section-title muted";
-    title.innerText = "Restricted";
-    list.appendChild(title);
-
-    restricted.forEach(h => {
-      const isSelected = selectedRestricted.includes(h.date);
-
-      const div = document.createElement("div");
-      div.className = "holiday-item";
-
-      const text = document.createElement("span");
-      text.innerText = `${h.date} — ${h.name}`;
-      text.className = "muted";
-
-      const btn = document.createElement("div");
-      btn.className = "icon-add";
-      btn.innerText = isSelected ? "✓" : "+";
-
-      btn.onclick = () => {
-        if (isSelected) {
-          selectedRestricted = selectedRestricted.filter(d => d !== h.date);
-        } else {
-          selectedRestricted.push(h.date);
-        }
-        leavesInput.value = selectedRestricted.length;
-        renderHolidays();
-        calculate();
-      };
-
-      div.appendChild(text);
-      div.appendChild(btn);
-      list.appendChild(div);
-    });
+    cal.appendChild(cell);
+    date.setDate(d+1);
   }
 }
 
+// Calculation
 function getWorkingDays(y,m){
-  let d=new Date(y,m-1,1),c=0;
-  while(d.getMonth()===m-1){
+  let d=new Date(y,m,1),c=0;
+  while(d.getMonth()===m){
     if(d.getDay()!=0 && d.getDay()!=6) c++;
     d.setDate(d.getDate()+1);
   }
   return c;
 }
 
-function getDeclared(key){
-  return (holidays[key]||[]).filter(h=>h.type==="declared").length;
-}
-
-function autoFillOffice(){
-  const key=getKey();
-  let w=getWorkingDays(yearSelect.value,monthSelect.value);
-  w-=getDeclared(key);
-  officeInput.value=w;
-}
-
 function calculate(){
+  const year=Number(yearSelect.value);
+  const month=Number(monthSelect.value);
+
+  let total=getWorkingDays(year,month);
+
   const key=getKey();
-  let total=getWorkingDays(yearSelect.value,monthSelect.value);
-  total-=getDeclared(key);
+  const declared=(holidays[key]||[]).filter(h=>h.type==="declared").length;
+
+  total-=declared;
 
   const leaves=Number(leavesInput.value||0);
   const office=Number(officeInput.value||0);
 
-  const effective=total-leaves;
+  const effective=Math.max(0,total-leaves);
 
-  if(effective<=0){
-    resultDiv.innerHTML=`<p>No working days</p>`;
-    return;
-  }
-
-  const effOffice=Math.min(office,total);
-  let percent=(effOffice/effective)*100;
-  percent=Math.min(percent,100).toFixed(2);
+  let percent=(office/effective)*100 || 0;
+  percent=Math.min(percent,100);
 
   const required=Math.ceil(0.6*effective);
-  const remaining=Math.max(0,required-effOffice);
+
+  const safeLeaves=Math.max(0,total-required);
+
+  // progress
+  progressFill.style.width=Math.min(percent,100)+"%";
+
+  safeLeavesDiv.innerHTML=`Safe Leaves Remaining: <b>${safeLeaves}</b>`;
+
+  let cls="good";
+  if(percent<60) cls="bad";
+  else if(percent<70) cls="warn";
 
   resultDiv.innerHTML=`
-    <p>Total Working Days: <b>${total}</b></p>
-    <p>After Leaves: <b>${effective}</b></p>
-    <p>Your Presence: <b>${percent}%</b></p>
-    <p>Minimum Required: <b>${required}</b></p>
-    <p>Still Needed: <b>${remaining}</b></p>
+    <p>Total Working Days: <span class="highlight">${total}</span></p>
+    <p>After Leaves: <span class="highlight">${effective}</span></p>
+    <p>Your Presence: <span class="highlight ${cls}">${percent.toFixed(2)}%</span></p>
+    <p>Minimum Required: <span class="highlight">${required}</span></p>
   `;
 }
 
