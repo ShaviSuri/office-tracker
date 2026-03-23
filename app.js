@@ -9,7 +9,6 @@ const resultDiv = document.getElementById("result");
 const officeInput = document.getElementById("officeDays");
 const leavesInput = document.getElementById("leaves");
 const progressFill = document.getElementById("progressFill");
-const safeLeavesDiv = document.getElementById("safeLeaves");
 
 // Init
 function initSelectors() {
@@ -227,7 +226,7 @@ function adjustOfficeDays(){
   officeInput.value=Math.max(0,total-leaves);
 }
 
-// Calculate
+// 🔥 FINAL CALCULATION
 function calculate(){
   let total=getWorkingDays(yearSelect.value,monthSelect.value);
   total-=getDeclared(getKey());
@@ -261,21 +260,35 @@ function calculate(){
   const remaining=Math.max(0,required-effectiveOffice);
 
   let cls="good";
-  if(percent<60) cls="bad";
-  else if(percent<70) cls="warn";
+  let statusText="On Track";
+
+  if(percent<60){
+    cls="bad";
+    statusText="Below Requirement";
+  } else if(percent<70){
+    cls="warn";
+    statusText="At Risk";
+  }
 
   resultDiv.innerHTML=`
     ${warning}
+    <p class="${cls}"><b>${statusText}</b></p>
+
     <p>Total Working Days: <span class="highlight">${total}</span></p>
     <p>After Leaves: <span class="highlight">${effective}</span></p>
+
     <p>Your Presence: <span class="highlight ${cls}">${percent}%</span></p>
-    <p>Minimum Required: <span class="highlight">${required}</span></p>
-    <p>Still Needed: <span class="highlight">${remaining}</span></p>
+
+    <div class="progress-bar">
+      <div id="progressFill"></div>
+    </div>
+
+    <p>You must attend <span class="highlight">${remaining}</span> more days</p>
+
+    <p>Max leaves allowed: <span class="highlight">${total-required}</span></p>
   `;
 
-  progressFill.style.width=percent+"%";
-  const safeLeaves=Math.max(0,total-required);
-  safeLeavesDiv.innerHTML=`Safe leaves remaining: <b>${safeLeaves}</b>`;
+  document.getElementById("progressFill").style.width = percent + "%";
 }
 
 initSelectors();
