@@ -295,13 +295,12 @@ resultDiv.innerHTML = `
 
   <p class="${cls}"><b>${statusText}</b></p>
 
+  <p>Total Working Days: <span class="highlight">${total}</span></p>
+  <p>After Leaves: <span class="highlight">${effective}</span></p>
   <p>
     Minimum Required: 
     <span class="highlight">${required}</span> days
   </p>
-
-  <p>Total Working Days: <span class="highlight">${total}</span></p>
-  <p>After Leaves: <span class="highlight">${effective}</span></p>
 
   <p>Your Presence: <span class="highlight ${cls}">${percent}%</span></p>
 
