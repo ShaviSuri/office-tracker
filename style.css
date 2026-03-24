@@ -78,6 +78,14 @@ button {
   cursor: pointer;
 }
 
+.result p:first-of-type {
+  font-size: 16px;
+}
+
+.result .highlight {
+  color: #22c55e;
+}
+
 .result p {
   margin: 10px 0;
 }
