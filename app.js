@@ -290,17 +290,23 @@ function calculate(){
     statusText = "Below Requirement";
   }
 
-  resultDiv.innerHTML=`
-    ${warning}
-    <p class="${cls}"><b>${statusText}</b></p>
+resultDiv.innerHTML = `
+  ${warning}
 
-    <p>Total Working Days: <span class="highlight">${total}</span></p>
-    <p>After Leaves: <span class="highlight">${effective}</span></p>
+  <p class="${cls}"><b>${statusText}</b></p>
 
-    <p>Your Presence: <span class="highlight ${cls}">${percent}%</span></p>
+  <p>
+    Minimum Required: 
+    <span class="highlight">${required}</span> days
+  </p>
 
-    <p>You must attend <span class="highlight">${remaining}</span> more days</p>
-  `;
+  <p>Total Working Days: <span class="highlight">${total}</span></p>
+  <p>After Leaves: <span class="highlight">${effective}</span></p>
+
+  <p>Your Presence: <span class="highlight ${cls}">${percent}%</span></p>
+
+  <p>You must attend <span class="highlight">${remaining}</span> more days</p>
+`;
 }
 
 initSelectors();
