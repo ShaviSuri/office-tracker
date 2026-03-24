@@ -1,2 +1,2 @@
 # office-tracker
-It will help you to calculate your 60% office presence
+Smart planner to track and calculate monthly office presence with holidays and leaves.

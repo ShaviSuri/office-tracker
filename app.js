@@ -68,6 +68,7 @@ function render(){
   userModifiedOffice=false;
   manualHolidayCount=0;
 
+  lucide.createIcons();
   renderHolidays();
   autoFillOffice();
   renderCalendar();
@@ -283,13 +284,10 @@ function calculate(){
 
   let cls="good";
   let statusText="On Track";
-
-  if(percent<60){
-    cls="bad";
-    statusText="Below Requirement";
-  } else if(percent<70){
-    cls="warn";
-    statusText="At Risk";
+  
+  if (percent < 60) {
+    cls = "bad";
+    statusText = "Below Requirement";
   }
 
   resultDiv.innerHTML=`

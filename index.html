@@ -21,27 +21,65 @@
   <main>
 
     <!-- Holidays -->
-    <section class="panel">
-      <h3>Holidays</h3>
-      <div id="holidayList"></div>
-    </section>
+  <section class="panel">
+    <h3>
+      Holidays
+      <span class="info">
+        <i data-lucide="info"></i>
+        <span class="tooltip">
+          • Declared holidays are excluded from working days<br>
+          • Restricted holidays are optional and can be counted as leaves<br>
+          • Use + to include restricted holidays in your plan
+        </span>
+      </span>
+    </h3>
+    <div id="holidayList"></div>
+  </section>
 
     <!-- Inputs -->
     <section class="panel">
       <h3>Your Plan</h3>
 
-      <label>Office Days</label>
+      <label>
+        Office Days
+        <span class="info">
+          <i data-lucide="info"></i>
+          <span class="tooltip">
+            Calculated after considering declared holidays. You can adjust manually.
+          </span>
+        </span>
+      </label>
       <input type="number" id="officeDays" />
 
-      <label>Leaves & Restricted Holidays</label>
+      <label>
+        Leaves & Restricted Holidays
+        <span class="info">
+          <i data-lucide="info"></i>
+          <span class="tooltip">
+            Leaves reduce your working days. Restricted holidays are included here.
+          </span>
+        </span>
+      </label>
       <input type="number" id="leaves" value="0" />
 
-      <button id="calcBtn">Recalculate</button>
+      <button id="calcBtn">Calculate</button>
     </section>
 
     <!-- Summary -->
     <section class="panel result">
-      <h3>Monthly Summary</h3>
+      <h3>
+        Monthly Summary
+        <span class="info">
+          <i data-lucide="info"></i>
+          <span class="tooltip">
+            • Working Days = Weekdays - Declared holidays<br>
+            • After Leaves = Available days<br>
+            • Presence = Office / Available days<br>
+            • Minimum required = 60%
+          </span>
+        </span>
+      </h3>
+
       <div id="result"></div>
     </section>
 

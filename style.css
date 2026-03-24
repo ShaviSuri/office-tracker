@@ -18,12 +18,22 @@ body {
 header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 25px;
+}
+
+header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1;
 }
 
 .selectors {
   display: flex;
   gap: 6px;
+  align-items: center;
+  margin-top: 4px;
 }
 
 select {
@@ -145,4 +155,52 @@ button {
 .restricted {
   background: #facc15;
   color: black;
+}
+
+/* Info icon */
+.info {
+  position: relative;
+  display: inline-flex;
+  margin-left: 6px;
+  cursor: pointer;
+}
+
+.info svg {
+  width: 14px;
+  height: 14px;
+  color: #94a3b8;
+}
+
+.info:hover svg {
+  color: #22c55e;
+}
+
+/* Tooltip (RIGHT SIDE, FIXED) */
+.tooltip {
+  position: absolute;
+  top: 50%;
+  left: 22px;
+  transform: translateY(-50%);
+  background: #020617;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  width: 220px;
+  display: none;
+  z-index: 20;
+}
+
+/* Arrow */
+.tooltip::after {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: #020617;
+}
+
+.info:hover .tooltip {
+  display: block;
 }
